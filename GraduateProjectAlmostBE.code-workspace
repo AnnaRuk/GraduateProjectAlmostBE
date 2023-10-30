@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../example3/my-app/src/components"
+		},
+		{
+			"path": "../../../example3/my-app/src"
+		},
+		{
+			"path": "../../../example3/my-app/public"
+		}
+	],
+	"settings": {}
+}
