@@ -35,6 +35,7 @@ public class SecurityConfig {
         httpSecurity.authorizeRequests()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/api/users/register/**").permitAll()
+                .antMatchers("/api/users/confirm/**").permitAll()
                 .antMatchers("/api/users").hasAnyAuthority("ADMIN")
                 .antMatchers("/api/**").authenticated();  //.permitAll();
 

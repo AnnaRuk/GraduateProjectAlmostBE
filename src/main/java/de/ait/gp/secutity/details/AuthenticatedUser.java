@@ -48,7 +48,7 @@ public class AuthenticatedUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+      return user.getState().equals(User.State.CONFIRMED);
     }
 
     public Long getId() {

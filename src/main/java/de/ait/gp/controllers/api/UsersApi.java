@@ -55,6 +55,10 @@ public interface UsersApi {
             ),
     })
 
+    @GetMapping("/confirm/{confirm-code}")
+    StandardResponseDto getConfirmation(@PathVariable("confirm-code") String confirmCode);
+
+
 
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
