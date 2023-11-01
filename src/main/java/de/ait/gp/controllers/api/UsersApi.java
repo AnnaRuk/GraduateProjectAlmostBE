@@ -46,16 +46,16 @@ public interface UsersApi {
     UserDto register(@RequestBody @Valid NewUserDto newUser);
 
 
-    @Operation(summary = "Getting a list of users", description = "Available to admin and manager.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Request processed successfully",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = UserDto.class))
-            ),
-    })
 
-
+    ///TODO documentstion
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+    ///TODO documentstion
+    @GetMapping("/confirm/{confirm-code}")
+    UserDto confirm(@PathVariable("confirm-code") String code);
+
+
 }
+
+

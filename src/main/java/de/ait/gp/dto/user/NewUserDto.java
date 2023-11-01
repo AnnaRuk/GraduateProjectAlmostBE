@@ -26,7 +26,7 @@ public class NewUserDto {
     @NotNull
     @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$")
     @Schema(description = "user's password", example = "Qwerty007!")
-    private String hashPassword;
+    private String password;
 
     @NotNull
     @NotEmpty
@@ -44,8 +44,6 @@ public class NewUserDto {
     @Schema(description = "user's role", example = "USER/MANAGER")
     private String role;
 
-    @Schema(description = "user's gender", example = "MALE/FEMALE/DIVERSE")
-    private String gender;
 
 
 }
