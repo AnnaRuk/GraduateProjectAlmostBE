@@ -1,6 +1,7 @@
 package de.ait.gp.controllers.api;
 
 
+import de.ait.gp.dto.KindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.user.UserDto;
@@ -20,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Tags(value = @Tag(name = "Users"))
@@ -62,4 +64,7 @@ public interface UsersApi {
 
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+
 }
+

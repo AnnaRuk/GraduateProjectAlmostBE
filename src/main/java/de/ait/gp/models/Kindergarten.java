@@ -38,6 +38,9 @@ public class Kindergarten {
     private Integer freePlaces;
 
     @Column(nullable = false)
+    private String city;
+
+    @Column(nullable = false)
     private String linkImg;
 
     @ToString.Exclude

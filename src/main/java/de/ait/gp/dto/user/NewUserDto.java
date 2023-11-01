@@ -28,13 +28,13 @@ public class NewUserDto {
     @Schema(description = "user's password", example = "Qwerty007!")
     private String hashPassword;
 
-    @NotNull
+
     @NotEmpty
     @NotBlank
     @Schema(description = "user's name", example = "Anna")
     private String firstName;
 
-    @NotNull
+
     @NotEmpty
     @NotBlank
     @Schema(description = "user's lastname", example = "Bieliaieva")
@@ -44,8 +44,7 @@ public class NewUserDto {
     @Schema(description = "user's role", example = "USER/MANAGER")
     private String role;
 
-    @Schema(description = "user's gender", example = "MALE/FEMALE/DIVERSE")
-    private String gender;
+
 
 
 }

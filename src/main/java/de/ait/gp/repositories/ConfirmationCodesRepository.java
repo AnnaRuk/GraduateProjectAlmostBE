@@ -7,5 +7,5 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface ConfirmationCodesRepository extends JpaRepository<ConfirmationCode, Long> {
-  Optional<ConfirmationCode> findByCodeAndExpiredDateTimeAfter(String cod,LocalDateTime now);
+  Optional<ConfirmationCode> findFirstByCodeAndExpiredDateTimeAfter(String cod, LocalDateTime now);
 }

@@ -1,11 +1,14 @@
 package de.ait.gp.services;
 
+import de.ait.gp.dto.KindergartenDto;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.exceptions.RestException;
 import de.ait.gp.mail.KindergartenMailSender;
 import de.ait.gp.models.ConfirmationCode;
+import de.ait.gp.models.Kindergarten;
 import de.ait.gp.models.User;
 import de.ait.gp.repositories.ConfirmationCodesRepository;
+import de.ait.gp.repositories.KindergartenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -29,6 +33,7 @@ public class UsersService {
    private final PasswordEncoder passwordEncoder;
    private final KindergartenMailSender mailSender;
    private final ConfirmationCodesRepository confirmationCodesRepository;
+   private final KindergartenRepository kindergartenRepository;
    @Value("${base.url}")
    private String baseUrl;
 
@@ -43,6 +48,8 @@ public class UsersService {
         User user = User.builder()
                 .email(newUser.getEmail())
                 .hashPassword(passwordEncoder.encode(newUser.getHashPassword()))
+                .firstName(newUser.getFirstName())
+                .lastName(newUser.getLastName())
                 .role(User.Role.USER)
                 .state(User.State.NOT_CONFIRMED)
                 .build();
@@ -74,11 +81,12 @@ public class UsersService {
     @Transactional
     public StandardResponseDto confirm(String confirmCode) {
         ConfirmationCode code = confirmationCodesRepository
-                .findByCodeAndExpiredDateTimeAfter(confirmCode, LocalDateTime.now())
+                .findFirstByCodeAndExpiredDateTimeAfter(confirmCode, LocalDateTime.now())
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Code not found or is expired"));
 
         User user = usersRepository
-                .findFirstByCodesContains(code)
+           //     .findFirstByCodesContains(code)
+                .findById(code.getUserCode().getId())
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User by code not found"));
 
         user.setState(User.State.CONFIRMED);
@@ -89,4 +97,6 @@ public class UsersService {
                 .message("User confirmed")
                 .build();
     }
+
+
 }
