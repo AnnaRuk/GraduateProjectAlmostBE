@@ -17,7 +17,7 @@ public class AuthenticatedUser implements UserDetails {
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { // права пользователя
+    public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString()));
     }
 
@@ -38,7 +38,7 @@ public class AuthenticatedUser implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !user.getState().equals(User.State.BANNED);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class AuthenticatedUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.getState().equals(User.State.CONFIRMED);
     }
 
     public Long getId() {

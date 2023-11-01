@@ -27,8 +27,8 @@ public class Kindergarten {
     //todo
     private String address;
 
-    @OneToOne(mappedBy = "positionKindergarten")
-    private User manager; //1:1 = ?
+//    @OneToOne(mappedBy = "positionKindergarten")
+//    private User manager; //1:1 = ?
 
     private String description;
 

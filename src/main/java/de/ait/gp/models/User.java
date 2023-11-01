@@ -76,7 +76,7 @@ public class User {
     private Set<Kindergarten> kindergartens; /////favourite
 
 
-    @OneToMany(mappedBy = "userCode")
+    @OneToMany(mappedBy = "userByCode")
     @ToString.Exclude
     private Set<ConfirmationCode> codes;
 
@@ -85,10 +85,10 @@ public class User {
     private Set<Request> requests;
 
 
-    @OneToOne
-    @ToString.Exclude
-    @JoinColumn(name = "kindergarten_id", nullable = false)
-    private Kindergarten positionKindergarten;
+//    @OneToOne
+//    @ToString.Exclude
+//    @JoinColumn(name = "kindergarten_id", nullable = false)
+//    private Kindergarten positionKindergarten;
 
 
     @ManyToMany

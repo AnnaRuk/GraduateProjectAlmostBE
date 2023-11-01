@@ -25,4 +25,9 @@ public class UserControllers implements UsersApi {
         return usersService.getProfile(currentId);
     }
 
+    @Override
+    public UserDto confirm(String code) {
+        return usersService.confirm(code);
+    }
+
 }
