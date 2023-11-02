@@ -90,12 +90,6 @@ public class User {
     private Set<Request> requests;
 
 
-//    @OneToOne
-//    @ToString.Exclude
-//    @JoinColumn(name = "kindergarten_id", nullable = false)
-//    private Kindergarten positionKindergarten;
-
-
     @ManyToMany
     @JoinTable(
             name = "user_dialogue",

@@ -7,7 +7,7 @@ import de.ait.gp.exceptions.RestException;
 
 import de.ait.gp.models.Kindergarten;
 import de.ait.gp.models.User;
-import de.ait.gp.repositories.KindergartenRepository;
+import de.ait.gp.repositories.KindergartensRepository;
 import de.ait.gp.repositories.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class KindergartenService {
 
-    private final KindergartenRepository kindergartenRepository;
+    private final KindergartensRepository kindergartensRepository;
     private final UsersRepository usersRepository;
 
 
     public KindergartensWithCitiesDto getAllKindergartensWithCities() {
-        List<KindergartenBaseDto> kindergartenBaseDtoListList = KindergartenBaseDto.from(kindergartenRepository.findAll());
-List<String> cities = kindergartenRepository.findAllCities();
+        List<KindergartenBaseDto> kindergartenBaseDtoListList = KindergartenBaseDto.from(kindergartensRepository.findAll());
+List<String> cities = kindergartensRepository.findAllCities();
 
         return KindergartensWithCitiesDto.builder()
                 .KindergartenBaseDTOList(kindergartenBaseDtoListList)
@@ -36,7 +36,7 @@ List<String> cities = kindergartenRepository.findAllCities();
 
     public KindergartenDto findKindergarten(Long KindergartenId) {
 
-        Kindergarten kindergarten = kindergartenRepository.findById(KindergartenId)
+        Kindergarten kindergarten = kindergartensRepository.findById(KindergartenId)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "kindergarten with id <" + KindergartenId + "> not found"));
 
         User manager = usersRepository.findFirstUserByControlKindergartenContains(kindergarten)

@@ -7,6 +7,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +37,19 @@ public class UserDto {
     @Schema(description = "user's role", example = "USER")
     private String role;
 
+    @Schema(name = "postCode", description = "user's postcode", example = "46446")
+    private String postCode;
+    @Schema(name = "address", description = "user's addres", example = "Berlinstr. 8")
+    private String address;
+    @Schema(name = "city", description = "user's city", example = "Berlin")
+    private String city;
+    @Schema(name = "phone", description = "user's phone", example = "+495451619")
+    private String phone;
+
+    @Enumerated(value = EnumType.STRING)
+    @Schema(name = "gender", description = "user's gender", example = "MALE")
+    private User.Gender gender;
+
 
     public static UserDto from(User user) {
         return UserDto.builder()
@@ -41,6 +58,11 @@ public class UserDto {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole().toString())
+                .postCode(user.getPostcode())
+                .address(user.getAddress())
+                .city(user.getCity())
+                .phone(user.getPhone())
+                .gender(user.getGender())
                 .build();
     }
 
