@@ -31,13 +31,14 @@ public class SecurityConfig {
         httpSecurity.csrf().disable();
         httpSecurity.headers().frameOptions().disable();
 
-
         httpSecurity.authorizeRequests()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers(HttpMethod.POST,"/api/users/register/**").permitAll()
                 .antMatchers("/api/users/confirm/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/kindergartens/**").permitAll()
                 .antMatchers("/api/users").hasAnyAuthority("ADMIN")
                 .antMatchers("/api/**").authenticated();
+
 
 
         httpSecurity.exceptionHandling()

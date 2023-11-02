@@ -47,11 +47,11 @@ public interface UsersApi {
 
 
 
-    ///TODO documentstion
+    ///TODO documentstion + test
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
-    ///TODO documentstion
+    ///TODO documentstion + test
     @GetMapping("/confirm/{confirm-code}")
     UserDto confirm(@PathVariable("confirm-code") String code);
 

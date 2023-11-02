@@ -1,17 +1,17 @@
 package de.ait.gp.services;
 
+import de.ait.gp.dto.user.NewUserDto;
+import de.ait.gp.dto.user.UserDto;
 import de.ait.gp.exceptions.RestException;
 import de.ait.gp.mail.ConfirmMailSender;
 import de.ait.gp.mail.MailTemplatesUtil;
 import de.ait.gp.models.ConfirmationCode;
 import de.ait.gp.models.User;
 import de.ait.gp.repositories.ConfirmationCodeRepository;
+import de.ait.gp.repositories.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import de.ait.gp.repositories.UsersRepository;
-import de.ait.gp.dto.user.UserDto;
-import de.ait.gp.dto.user.NewUserDto;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
