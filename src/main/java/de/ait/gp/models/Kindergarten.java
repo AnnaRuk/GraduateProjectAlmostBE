@@ -45,9 +45,14 @@ public class Kindergarten {
     @OneToMany(mappedBy = "kindergarten")
     private Set<Request> requests;
 
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "manager_id", nullable = false)
+    private User manager;
 
-    @ManyToMany(mappedBy = "kindergartens")
-    private Set<User> choosers;  //favourite
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "favorities")
+    private Set<User> choosers;
 
     @Override
     public final boolean equals(Object o) {
