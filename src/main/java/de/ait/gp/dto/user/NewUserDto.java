@@ -28,19 +28,20 @@ public class NewUserDto {
     @Schema(description = "user's password", example = "Qwerty007!")
     private String password;
 
-    @NotNull
+
     @NotEmpty
     @NotBlank
     @Schema(description = "user's name", example = "Anna")
     private String firstName;
 
-    @NotNull
+
     @NotEmpty
     @NotBlank
     @Schema(description = "user's lastname", example = "Bieliaieva")
     private String lastName;
 
-    @NotNull
+    @NotEmpty
+    @NotBlank
     @Schema(description = "user's role", example = "USER/MANAGER")
     private String role;
 

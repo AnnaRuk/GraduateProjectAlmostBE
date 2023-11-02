@@ -63,6 +63,9 @@ public class User {
 
     private String phone;
 
+    @OneToMany(mappedBy = "manager")
+    private Set<Kindergarten> controlKindergarten;
+
     @OneToMany(mappedBy = "parent")
     @ToString.Exclude
     private Set<Child> children;
@@ -70,12 +73,12 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "user_kindergarten",
+            name = "favorities",
             joinColumns = @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "kindergarten_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "kindergarten_id"} )
     )
-    private Set<Kindergarten> kindergartens; /////favourite
+    private Set<Kindergarten> favorities; /////favourite
 
 
     @OneToMany(mappedBy = "userByCode")
@@ -85,12 +88,6 @@ public class User {
 
     @OneToMany(mappedBy = "requestSender")
     private Set<Request> requests;
-
-
-//    @OneToOne
-//    @ToString.Exclude
-//    @JoinColumn(name = "kindergarten_id", nullable = false)
-//    private Kindergarten positionKindergarten;
 
 
     @ManyToMany

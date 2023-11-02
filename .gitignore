@@ -38,3 +38,4 @@ mvnw
 
 
 
+src/main/resources/http/requestsUsers.http
