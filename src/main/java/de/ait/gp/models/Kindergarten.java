@@ -2,6 +2,7 @@ package de.ait.gp.models;
 
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
@@ -23,12 +24,12 @@ public class Kindergarten {
     @Column(length = 30)
     private String title;
 
-    @Column(length = 100)
-    //todo
+    @Column(length = 50)
     private String address;
-
-//    @OneToOne(mappedBy = "positionKindergarten")
-//    private User manager; //1:1 = ?
+    @Column(length = 30)
+    private String postcode;
+    @Column(length = 30)
+    private String city;
 
     private String description;
 
