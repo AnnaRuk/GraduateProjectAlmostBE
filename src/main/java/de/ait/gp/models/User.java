@@ -54,8 +54,10 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     private State state;
 
-
     private String address;
+    private String postcode;
+    private String city;
+
 
     private LocalDate dateOfBirth;
 
