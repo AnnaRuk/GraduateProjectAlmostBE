@@ -99,4 +99,23 @@ public class UsersService {
     }
 
 
+    public UserDto updateUser(User user) {
+
+        User findUser = usersRepository.findUserById(user.getId())
+                .orElseThrow(() ->  new RestException(HttpStatus.NOT_FOUND,"User wuth id<" + user.getId() + ". not found"));
+
+        findUser.setFirstName(user.getFirstName());
+        findUser.setLastName(user.getLastName());
+        findUser.setEmail(user.getEmail());
+        findUser.setPhone(user.getPhone());
+        findUser.setAddress(user.getAddress());
+        findUser.setRole(user.getRole());
+        findUser.setCodes(user.getCodes());
+        findUser.setDateOfBirth(user.getDateOfBirth());
+        findUser.setHashPassword(passwordEncoder.encode(user.getHashPassword()));
+
+        usersRepository.save(findUser);
+
+        return UserDto.from(findUser);
+    }
 }

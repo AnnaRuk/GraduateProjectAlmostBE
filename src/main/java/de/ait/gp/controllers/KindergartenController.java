@@ -21,4 +21,9 @@ public class KindergartenController implements KindergartenApi {
     public List<KindergartenDto> getAllKindergartens() {
         return kindergartenService.getAllKindergartens();
     }
+
+    @Override
+    public KindergartenDto getKindergartenInfo(Long idKindergarten, Long idManager) {
+        return kindergartenService.findKindergarten(idKindergarten,idManager);
+    }
 }

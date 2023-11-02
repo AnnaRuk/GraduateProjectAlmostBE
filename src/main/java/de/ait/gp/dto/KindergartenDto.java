@@ -11,14 +11,16 @@ import java.util.stream.Collectors;
 @Setter
 @ToString
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
+@Builder
 public class KindergartenDto {
     private String title;
     private String city;
     private String address;
     private Integer capacity;
     private String linkImg;
+    private String phone;
+    private String description;
 
 
     public static KindergartenDto from(Kindergarten kindergarten) {
@@ -30,6 +32,8 @@ public class KindergartenDto {
                 .linkImg(kindergarten.getLinkImg())
                 .build();
     }
+
+
 
 
     public static List<KindergartenDto> from(Collection<Kindergarten> users) {

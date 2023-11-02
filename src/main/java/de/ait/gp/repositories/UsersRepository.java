@@ -15,7 +15,7 @@ public interface UsersRepository extends JpaRepository<User,Long> {
 
     Optional<User> findFirstByCodesContains(ConfirmationCode code);
 
-    Optional<User> findById(Long id);
+    Optional<User> findUserById(Long id);
 
 
 

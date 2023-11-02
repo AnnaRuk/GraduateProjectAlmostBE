@@ -4,6 +4,7 @@ import de.ait.gp.dto.KindergartenDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -14,4 +15,12 @@ public interface KindergartenApi {
 
     @GetMapping
     List<KindergartenDto> getAllKindergartens();
+
+    @GetMapping("/{kindergarten-id}/{manager-id}")
+    KindergartenDto getKindergartenInfo(@PathVariable("kindergarten-id") Long idKindergarten,
+                                        @PathVariable("manager-id") Long idManager);
 }
+
+
+
+

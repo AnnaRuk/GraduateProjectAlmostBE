@@ -5,6 +5,7 @@ import de.ait.gp.dto.KindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.user.UserDto;
+import de.ait.gp.models.User;
 import de.ait.gp.secutity.details.AuthenticatedUser;
 import de.ait.gp.validation.dto.ValidationErrorsDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -65,6 +66,8 @@ public interface UsersApi {
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
+    @PutMapping("/update")
+    UserDto updateUser(@RequestBody @Valid User user);
 
 }
 

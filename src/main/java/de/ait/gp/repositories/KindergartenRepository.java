@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface KindergartenRepository extends JpaRepository<Kindergarten,Long> {
-
 }
+
