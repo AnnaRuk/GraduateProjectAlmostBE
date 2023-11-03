@@ -1,5 +1,6 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -68,5 +69,17 @@ public class Kindergarten {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public Kindergarten updateFrom(UpdateKindergartenDto updateKindergartenDto) {
+        this.setTitle(updateKindergartenDto.getTitle());
+        this.setCity(updateKindergartenDto.getCity());
+        this.setAddress(updateKindergartenDto.getAddress());
+        this.setPostcode(updateKindergartenDto.getPostcode());
+        this.setCapacity(updateKindergartenDto.getCapacity());
+        this.setDescription(updateKindergartenDto.getDescription());
+        this.setLinkImg(updateKindergartenDto.getLinkImg());
+
+        return this;
     }
 }

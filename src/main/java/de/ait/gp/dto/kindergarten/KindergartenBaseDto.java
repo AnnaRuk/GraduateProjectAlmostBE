@@ -22,18 +22,18 @@ public class KindergartenBaseDto {
 
     @NotBlank
     @NotEmpty
-    @Schema(name = "title", description = "title of Kindergarten")
+    @Schema(name = "title", description = "title of Kindergarten", example = "Title")
     private String title;
     @NotBlank
     @NotEmpty
-    @Schema(name = "city", description = "city of Kindergarten")
+    @Schema(name = "city", description = "city of Kindergarten", example = "City")
     private String city;
     @NotBlank
     @NotEmpty
-    @Schema(name = "address", description = "address of Kindergarten")
+    @Schema(name = "address", description = "address of Kindergarten", example = "Address, 11")
     private String address;
     @NotNull
-    @Schema(name = "capacity", description = "capacity of Kindergarten")
+    @Schema(name = "capacity", description = "capacity of Kindergarten", example = "50")
     private Integer capacity;
 
 

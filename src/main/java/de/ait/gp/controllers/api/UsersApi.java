@@ -3,6 +3,7 @@ package de.ait.gp.controllers.api;
 
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
+import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.user.UpdateUserDto;
@@ -50,11 +51,11 @@ public interface UsersApi {
 
 
 
-    ///TODO documentstion + test
+    ///TODO documentation + test
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
-    ///TODO documentstion + test
+    ///TODO documentation + test
     @GetMapping("/confirm/{confirm-code}")
     UserDto confirm(@PathVariable("confirm-code") String code);
     @Operation(summary = "Adding new kindergarten to Manager", description = "Available to Manager")
@@ -77,10 +78,10 @@ public interface UsersApi {
     KindergartenDto addControlKindergartenToManager(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                     @RequestBody @Valid NewKindergartenDto NewKindergarten);
 
-    @Operation(summary = "Getting Kindergarten info from user", description = "Available to manager")
+    @Operation(summary = "Getting Kindergarten's info from user", description = "Available to manager")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "201",
-                description = "kindergarten has been added",
+        @ApiResponse(responseCode = "200",
+                description = "Success",
                 content = @Content(mediaType = "application/json",
                         schema = @Schema(implementation = KindergartenDto.class))),
         @ApiResponse(responseCode = "404",
@@ -91,9 +92,44 @@ public interface UsersApi {
     @GetMapping("/profile/controlKindergarten")
     KindergartenDto getControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
+    @Operation(summary = "Updating user's info", description = "Available to everyone")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "20o",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "There is already a user with this email",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+
+    })
     @PutMapping("/profile")
     UserDto updateUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                       @RequestBody UpdateUserDto updateUserDto);
+                       @RequestBody @Valid UpdateUserDto updateUserDto);
+    @Operation(summary = "Updating control kindergarten's info", description = "Available to Manager")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "20o",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "There is already a Kindergarten with this data",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+
+    })
+    @PutMapping("/profile/controlKindergarten")
+    KindergartenDto updateControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                      @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);
 }
 
 

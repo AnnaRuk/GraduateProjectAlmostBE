@@ -14,5 +14,6 @@ public interface KindergartensRepository extends JpaRepository<Kindergarten,Long
 @Query("select distinct city from Kindergarten group by city")
     List<String> findAllCities();
 boolean existsByTitleAndCityAndAddress(String title, String city, String address);
+Optional<Kindergarten> findFirstByTitleAndCityAndAddress(String title, String city, String address);
 Optional<Kindergarten> findKindergartenByManager_Id(Long userId);
 }

@@ -2,6 +2,7 @@ package de.ait.gp.services;
 
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
+import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
@@ -47,7 +48,6 @@ public class UsersService {
         if (usersRepository.existsByEmail(newUser.getEmail())) {
             throw new RestException(HttpStatus.CONFLICT, "User with email <" + newUser.getEmail() + "> already exists");
         }
-
         User user = User.builder()
                 .firstName(newUser.getFirstName())
                 .lastName(newUser.getLastName())
@@ -100,6 +100,13 @@ public class UsersService {
     }
 
     public KindergartenDto addControlKindergartenToManager(Long userId, NewKindergartenDto newKindergarten) {
+        if (kindergartensRepository.existsByTitleAndCityAndAddress(
+                newKindergarten.getTitle(),
+                newKindergarten.getCity(),
+                newKindergarten.getAddress()
+        )) {
+            throw new RestException(HttpStatus.CONFLICT, "Kindergarten with this data already exists");
+        }
         User user = getUser(userId);
         Kindergarten kindergarten = Kindergarten.builder()
                 .title(newKindergarten.getTitle())
@@ -119,37 +126,59 @@ public class UsersService {
         return usersRepository.findById(userId)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User with id <" + userId + "> not found"));
     }
+
     public User.Role getRole(String role) {
         return role.equals(User.Role.ADMIN.toString()) ? User.Role.ADMIN :
-                role.equals(User.Role.USER.toString()) ? User.Role.USER: User.Role.MANAGER;
-    }
-    public User.Gender getGender(String gender) {
-        return gender.equals(User.Gender.MALE.toString()) ? User.Gender.MALE :
-                gender.equals(User.Gender.FEMALE.toString()) ? User.Gender.FEMALE: User.Gender.DIVERSE;
+                role.equals(User.Role.MANAGER.toString()) ? User.Role.MANAGER : User.Role.USER;
     }
 
     public KindergartenDto getControlKindergarten(Long userId) {
         User user = getUser(userId);
-        Kindergarten kindergarten=kindergartensRepository.findKindergartenByManager_Id(userId)
-                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Manager with id <" + userId + "> not found"));
+        Kindergarten kindergarten = kindergartensRepository.findKindergartenByManager_Id(userId)
+                .orElseThrow(() ->
+                        new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id <" + userId + "> not found"));
         return KindergartenDto.from(kindergarten, user.getPhone());
     }
+
     public UserDto updateUser(Long userID, UpdateUserDto updateUserDto) {
 
         User user = getUser(userID);
+        if (usersRepository.existsByEmail(updateUserDto.getEmail())) {
+            User userWithEmail = usersRepository.findByEmail(updateUserDto.getEmail()).orElseThrow();
+            if (userID.intValue() != userWithEmail.getId().intValue()) {
+                throw new RestException(HttpStatus.CONFLICT, "User with email <" + updateUserDto.getEmail() + "> already exists");
+            }
+        }
 
-        user.setFirstName(updateUserDto.getFirstName());
-        user.setLastName(updateUserDto.getLastName());
-        user.setEmail(updateUserDto.getEmail());
-        user.setAddress(updateUserDto.getAddress());
-        user.setGender(getGender(updateUserDto.getGender()));
-        user.setPostcode(updateUserDto.getPostCode());
-        user.setDateOfBirth(updateUserDto.getDateOfBirth());
-        user.setCity(updateUserDto.getCity());
-        user.setPhone(updateUserDto.getPhone());
-
-        usersRepository.save(user);
+        usersRepository.save(user.updateFrom(updateUserDto));
 
         return UserDto.from(user);
+    }
+
+    public KindergartenDto updateControlKindergarten(Long userId, UpdateKindergartenDto updateKindergartenDto) {
+        User user = getUser(userId);
+
+        String title = updateKindergartenDto.getTitle();
+        String city = updateKindergartenDto.getCity();
+        String address = updateKindergartenDto.getAddress();
+
+        Kindergarten kindergarten = kindergartensRepository.findKindergartenByManager_Id(userId)
+                .orElseThrow(() ->
+                        new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id <" + userId + "> not found"));
+
+        if (kindergartensRepository.existsByTitleAndCityAndAddress(title, city, address)) {
+
+            Kindergarten kindergartenWithData = kindergartensRepository
+                    .findFirstByTitleAndCityAndAddress(title, city, address)
+                    .orElseThrow();
+
+            if (kindergarten.getId().intValue() != kindergartenWithData.getId().intValue()) {
+                throw new RestException(HttpStatus.CONFLICT, "Kindergarten with this data already exists");
+            }
+        }
+
+        kindergartensRepository.save(kindergarten.updateFrom(updateKindergartenDto));
+
+        return KindergartenDto.from(kindergarten, user.getPhone());
     }
 }

@@ -1,5 +1,6 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.user.UpdateUserDto;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 import javax.persistence.*;
@@ -78,8 +79,7 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "kindergarten_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "kindergarten_id"} )
     )
-    private Set<Kindergarten> favorities; /////favourite
-
+    private Set<Kindergarten> favorities;
 
     @OneToMany(mappedBy = "userByCode")
     @ToString.Exclude
@@ -117,5 +117,22 @@ public class User {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+    public User updateFrom(UpdateUserDto updateUserDto) {
+        this.setFirstName(updateUserDto.getFirstName());
+        this.setLastName(updateUserDto.getLastName());
+        this.setEmail(updateUserDto.getEmail());
+        this.setAddress(updateUserDto.getAddress());
+        this.setGender(getEnumGender(updateUserDto.getGender()));
+        this.setPostcode(updateUserDto.getPostCode());
+        this.setDateOfBirth(LocalDate.parse(updateUserDto.getDateOfBirth()));
+        this.setCity(updateUserDto.getCity());
+        this.setPhone(updateUserDto.getPhone());
+        return this;
+    }
+
+    public Gender getEnumGender(String gender) {
+        return gender.equals(Gender.MALE.toString()) ? Gender.MALE :
+                gender.equals(Gender.FEMALE.toString()) ? Gender.FEMALE : Gender.DIVERSE;
     }
 }
