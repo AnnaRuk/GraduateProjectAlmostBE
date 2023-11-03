@@ -1,10 +1,8 @@
 package de.ait.gp.services;
 
-import de.ait.gp.dto.kindergarten.KindergartenBaseDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartensWithCitiesDto;
 import de.ait.gp.exceptions.RestException;
-
 import de.ait.gp.models.Kindergarten;
 import de.ait.gp.models.User;
 import de.ait.gp.repositories.KindergartensRepository;
@@ -13,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,11 +24,18 @@ public class KindergartenService {
 
 
     public KindergartensWithCitiesDto getAllKindergartensWithCities() {
-        List<KindergartenBaseDto> kindergartenBaseDtoListList = KindergartenBaseDto.from(kindergartensRepository.findAll());
-List<String> cities = kindergartensRepository.findAllCities();
+        List<Kindergarten> kindergartenList = kindergartensRepository.findAll();
+        List<KindergartenDto> kindergartenDtoList = new ArrayList<>();
+        for (Kindergarten kindergarten : kindergartenList) {
+            User manager = usersRepository.findFirstUserByControlKindergartenContains(kindergarten)
+                    .orElseThrow(() ->
+                            new RestException(HttpStatus.NOT_FOUND, "Manager of kindergarten with id <" + kindergarten.getId() + "> not found"));
+            kindergartenDtoList.add(KindergartenDto.from(kindergarten, manager.getPhone()));
+        }
+        List<String> cities = kindergartensRepository.findAllCities();
 
         return KindergartensWithCitiesDto.builder()
-                .KindergartenBaseDTOList(kindergartenBaseDtoListList)
+                .KindergartenDTOList(kindergartenDtoList)
                 .cities(cities)
                 .build();
     }

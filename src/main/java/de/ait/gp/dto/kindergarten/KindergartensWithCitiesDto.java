@@ -19,6 +19,6 @@ public class KindergartensWithCitiesDto {
     private List<String> cities;
     @NotNull
     @Schema(name = "kindergartens", description = "all kindergartens")
-    private List<KindergartenBaseDto> KindergartenBaseDTOList;
+    private List<KindergartenDto> KindergartenDTOList;
 
 }
