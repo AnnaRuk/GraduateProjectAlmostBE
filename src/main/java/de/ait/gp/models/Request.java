@@ -4,6 +4,8 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 
@@ -31,11 +33,9 @@ public class Request {
     @JoinColumn(name = "child_id", nullable = false)
     private Child child;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User requestSender;
+    @Column(nullable = false)
+    private LocalDateTime requestDateTime;
 
-    //todo
     @ManyToOne
     @JoinColumn(name = "kindergarten_id", nullable = false)
     private Kindergarten kindergarten;

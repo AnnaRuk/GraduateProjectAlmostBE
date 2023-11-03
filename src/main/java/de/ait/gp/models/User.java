@@ -86,10 +86,6 @@ public class User {
     private Set<ConfirmationCode> codes;
 
 
-    @OneToMany(mappedBy = "requestSender")
-    private Set<Request> requests;
-
-
     @ManyToMany
     @JoinTable(
             name = "user_dialogue",
