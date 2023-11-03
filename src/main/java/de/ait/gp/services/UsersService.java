@@ -1,6 +1,7 @@
 package de.ait.gp.services;
 
 import de.ait.gp.dto.kindergarten.KindergartenDto;
+import de.ait.gp.dto.kindergarten.KindergartenDtoList;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
 import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
@@ -24,6 +25,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @EnableAsync
@@ -180,5 +184,25 @@ public class UsersService {
         kindergartensRepository.save(kindergarten.updateFrom(updateKindergartenDto));
 
         return KindergartenDto.from(kindergarten, user.getPhone());
+    }
+
+    public KindergartenDtoList getAllFavoriteKindergartens(Long id) {
+
+        User user = getUser(id);
+
+        List<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContains(user);
+
+        List<KindergartenDto> kindergartenDtoList = new ArrayList<>();
+
+        for (Kindergarten kindergarten : kindergartens) {
+            User manager = usersRepository.findFirstUserByControlKindergartenContains(kindergarten)
+                    .orElseThrow(() ->
+                            new RestException(HttpStatus.NOT_FOUND, "Manager of kindergarten with id <" + kindergarten.getId() + "> not found"));
+            kindergartenDtoList.add(KindergartenDto.from(kindergarten, manager.getPhone()));
+        }
+        return KindergartenDtoList.builder()
+                .kindergartens(kindergartenDtoList)
+                .build();
+
     }
 }

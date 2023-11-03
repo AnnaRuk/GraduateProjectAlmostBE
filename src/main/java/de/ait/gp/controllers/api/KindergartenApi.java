@@ -46,6 +46,8 @@ public interface KindergartenApi {
     })
     @GetMapping("/{kindergarten-id}")
     KindergartenDto getKindergartenInfo(@PathVariable("kindergarten-id") Long KindergartenId);
+
+
 }
 
 

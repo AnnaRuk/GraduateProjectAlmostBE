@@ -6,6 +6,7 @@ import de.ait.gp.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
+import java.util.Set;
 
 public interface UsersRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(String email);
@@ -15,5 +16,7 @@ public interface UsersRepository extends JpaRepository<User, Long> {
     Optional<User> findFirstByCodesContains(ConfirmationCode code);
 
     Optional<User> findFirstUserByControlKindergartenContains(Kindergarten controlKindergarten);
+
+
 
 }
