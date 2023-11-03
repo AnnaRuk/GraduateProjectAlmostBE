@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @Schema(name = "Message", description = "Any message from the server")
 public class StandardResponseDto {
-    @Schema(description = "Possible: error message, status change, etc.", example = "entity not found")
+    @Schema(description = "Possible: error message, status change, etc.", example = "Error or any other message from the server")
     private String message;
 }

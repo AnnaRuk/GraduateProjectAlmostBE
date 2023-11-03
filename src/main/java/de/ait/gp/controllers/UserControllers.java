@@ -3,6 +3,7 @@ package de.ait.gp.controllers;
 import de.ait.gp.controllers.api.UsersApi;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
+import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
@@ -46,5 +47,10 @@ public class UserControllers implements UsersApi {
     @Override
     public UserDto updateUser(AuthenticatedUser user, UpdateUserDto updateUserDto) {
         return usersService.updateUser(user.getId(), updateUserDto);
+    }
+
+    @Override
+    public KindergartenDto updateControlKindergarten(AuthenticatedUser user, UpdateKindergartenDto updateKindergartenDto) {
+        return usersService.updateControlKindergarten(user.getId(), updateKindergartenDto);
     }
 }
