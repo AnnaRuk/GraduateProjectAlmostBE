@@ -2,6 +2,7 @@ package de.ait.gp.controllers.api;
 
 
 import de.ait.gp.dto.kindergarten.KindergartenDto;
+import de.ait.gp.dto.kindergarten.KindergartenDtoList;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
 import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
@@ -24,6 +25,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Tags(value = @Tag(name = "Users"))
@@ -130,6 +132,21 @@ public interface UsersApi {
     @PutMapping("/profile/controlKindergarten")
     KindergartenDto updateControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                       @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);
+
+    @Operation(summary = "Get all favorite kindergartens", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDtoList.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+
+    @GetMapping ("/profile/favorities")
+    KindergartenDtoList getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 }
 
 
