@@ -1,6 +1,8 @@
 package de.ait.gp.controllers.api;
 
 
+
+import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartenDtoList;
@@ -145,6 +147,26 @@ public interface UsersApi {
 
     @GetMapping ("/profile/favorites")
     KindergartenDtoList getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+    @Operation(summary = "Adding new favorite kindergarten to User", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "kindergarten has been added",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "This kindergarten has already been added to the user",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/profile/favorities")
+    KindergartenDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                               @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 }
 
 

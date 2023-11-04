@@ -1,10 +1,7 @@
 package de.ait.gp.controllers;
 
 import de.ait.gp.controllers.api.UsersApi;
-import de.ait.gp.dto.kindergarten.KindergartenDto;
-import de.ait.gp.dto.kindergarten.KindergartenDtoList;
-import de.ait.gp.dto.kindergarten.NewKindergartenDto;
-import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
+import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
@@ -12,8 +9,6 @@ import de.ait.gp.secutity.details.AuthenticatedUser;
 import de.ait.gp.services.UsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 
 @RestController
@@ -60,5 +55,10 @@ public class UserControllers implements UsersApi {
     @Override
     public KindergartenDtoList getFavoriteKindergartens(AuthenticatedUser user) {
         return usersService.getAllFavoriteKindergartens(user.getId());
+    }
+
+    @Override
+    public KindergartenDto addKindergartenToFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenToFavoriteDto) {
+        return usersService.addKindergartenToFavorites(user.getId(), kindergartenToFavoriteDto.getKindergartenId());
     }
 }
