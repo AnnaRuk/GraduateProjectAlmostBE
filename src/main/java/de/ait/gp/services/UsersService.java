@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static de.ait.gp.models.Kindergarten.from;
+import static de.ait.gp.dto.kindergarten.KindergartenDto.from;
 
 @EnableAsync
 @Service
@@ -215,4 +216,18 @@ public class UsersService {
     }
 
 
+    public KindergartenDto deleteKindergartenFromFavorites(Long userId, Long kindergartenId) {
+
+        User user = getUser(userId);
+        Kindergarten kindergarten = getKindergarten(kindergartenId);
+        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
+
+        if (!kindergartens.remove(kindergarten)){
+            throw new RestException(HttpStatus.BAD_REQUEST,"This kindergarten with id<" + kindergartenId + "> not found in favorite");
+        }
+
+        user.setFavorities(kindergartens);
+        usersRepository.save(user);
+        return KindergartenDto.from(kindergarten);
+    }
 }

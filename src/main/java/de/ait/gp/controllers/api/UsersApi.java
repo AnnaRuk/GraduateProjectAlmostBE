@@ -167,6 +167,27 @@ public interface UsersApi {
     @PostMapping("/profile/favorities")
     KindergartenDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
+
+    @Operation(summary = "Delete kindergaten from favorites", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "kindergarten was deleted",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class)))
+    })
+
+    @DeleteMapping("/profile/favorities")
+    KindergartenDto deleteKindergartenFromFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                                    @RequestBody KindergartenToFavoriteDto deleteKindergarten);
+
 }
 
 
