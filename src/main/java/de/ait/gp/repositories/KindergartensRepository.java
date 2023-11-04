@@ -23,4 +23,5 @@ Optional<Kindergarten> findKindergartenByManager_Id(Long userId);
     Set<Kindergarten> findAllByChoosersId(Long id);
     Optional<Kindergarten> findById(Long id);
 
+
 }
