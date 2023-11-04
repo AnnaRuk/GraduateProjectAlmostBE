@@ -15,6 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,16 +26,20 @@ public class UserDto {
 
     @Schema(description = "user's identifier", example = "1")
     private Long id;
-
+    @NotBlank
+    @NotEmpty
     @Schema(description = "user's firstname", example = "Anna")
     private String firstName;
-
+    @NotBlank
+    @NotEmpty
     @Schema(description = "user's lastname", example = "Bieliaieva")
     private String lastName;
-
+    @NotBlank
+    @NotEmpty
     @Schema(description = "user's email", example = "user@gmail.com")
     private String email;
-
+    @NotBlank
+    @NotEmpty
     @Schema(description = "user's role", example = "USER")
     private String role;
 
@@ -45,10 +51,12 @@ public class UserDto {
     private String city;
     @Schema(name = "phone", description = "user's phone", example = "+495451619")
     private String phone;
+    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "05.03.1990")
+    private String dateOfBirth;
 
     @Enumerated(value = EnumType.STRING)
     @Schema(name = "gender", description = "user's gender", example = "MALE")
-    private User.Gender gender;
+    private String gender;
 
 
     public static UserDto from(User user) {
@@ -62,7 +70,8 @@ public class UserDto {
                 .address(user.getAddress())
                 .city(user.getCity())
                 .phone(user.getPhone())
-                .gender(user.getGender())
+                .dateOfBirth(user.getDateOfBirth() != null ? user.getDateOfBirth().format(DATE_FORMAT) : null)
+                .gender(user.getGender().toString())
                 .build();
     }
 

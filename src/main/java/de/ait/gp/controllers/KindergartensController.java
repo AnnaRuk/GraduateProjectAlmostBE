@@ -1,28 +1,28 @@
 package de.ait.gp.controllers;
 
-import de.ait.gp.controllers.api.KindergartenApi;
+import de.ait.gp.controllers.api.KindergartensApi;
 
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartensWithCitiesDto;
-import de.ait.gp.services.KindergartenService;
+import de.ait.gp.services.KindergartensService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class KindergartenController implements KindergartenApi {
+public class KindergartensController implements KindergartensApi {
 
 
-    private final KindergartenService kindergartenService;
+    private final KindergartensService kindergartensService;
 
     @Override
     public KindergartensWithCitiesDto getAllKindergartens() {
-        return kindergartenService.getAllKindergartensWithCities();
+        return kindergartensService.getAllKindergartensWithCities();
     }
 
     @Override
     public KindergartenDto getKindergartenInfo(Long KindergartenId) {
-        return kindergartenService.findKindergarten(KindergartenId);
+        return kindergartensService.findKindergarten(KindergartenId);
     }
 }

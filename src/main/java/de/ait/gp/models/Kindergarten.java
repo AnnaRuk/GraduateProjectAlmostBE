@@ -1,5 +1,6 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.kindergarten.NewKindergartenDto;
 import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -81,5 +82,18 @@ public class Kindergarten {
         this.setLinkImg(updateKindergartenDto.getLinkImg());
 
         return this;
+    }
+
+    public static  Kindergarten from(NewKindergartenDto newKindergarten, User user) {
+        return Kindergarten.builder()
+                .title(newKindergarten.getTitle())
+                .city(newKindergarten.getCity())
+                .capacity(newKindergarten.getCapacity())
+                .manager(user)
+                .postcode(newKindergarten.getPostcode())
+                .address(newKindergarten.getAddress())
+                .linkImg(newKindergarten.getLinkImg())
+                .description(newKindergarten.getDescription())
+                .build();
     }
 }

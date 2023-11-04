@@ -16,6 +16,8 @@ import de.ait.gp.models.User;
 import de.ait.gp.repositories.ConfirmationCodeRepository;
 import de.ait.gp.repositories.KindergartensRepository;
 import de.ait.gp.repositories.UsersRepository;
+import de.ait.gp.utils.KindergartenDtoListMapper;
+import de.ait.gp.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,7 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
+
+import static de.ait.gp.models.Kindergarten.from;
 
 @EnableAsync
 @Service
@@ -38,6 +43,7 @@ public class UsersService {
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final ConfirmMailSender confirmMailSender;
     private final MailTemplatesUtil mailTemplatesUtil;
+    private final KindergartenDtoListMapper kindergartenDtoListMapper;
 
     @Value("${base.url}")
     private String baseUrl;
@@ -54,7 +60,7 @@ public class UsersService {
                 .lastName(newUser.getLastName())
                 .email(newUser.getEmail())
                 .hashPassword(passwordEncoder.encode(newUser.getPassword()))
-                .role(getRole(newUser.getRole()))
+                .role(UserUtils.getEnumRole(newUser.getRole()))
                 .state(User.State.NOT_CONFIRMED)
                 .build();
 
@@ -109,16 +115,7 @@ public class UsersService {
             throw new RestException(HttpStatus.CONFLICT, "Kindergarten with this data already exists");
         }
         User user = getUser(userId);
-        Kindergarten kindergarten = Kindergarten.builder()
-                .title(newKindergarten.getTitle())
-                .city(newKindergarten.getCity())
-                .capacity(newKindergarten.getCapacity())
-                .manager(user)
-                .postcode(newKindergarten.getPostcode())
-                .address(newKindergarten.getAddress())
-                .linkImg(newKindergarten.getLinkImg())
-                .description(newKindergarten.getDescription())
-                .build();
+        Kindergarten kindergarten = from(newKindergarten, user);
         kindergartensRepository.save(kindergarten);
         return KindergartenDto.from(kindergarten, user.getPhone());
     }
@@ -128,10 +125,7 @@ public class UsersService {
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User with id <" + userId + "> not found"));
     }
 
-    public User.Role getRole(String role) {
-        return role.equals(User.Role.ADMIN.toString()) ? User.Role.ADMIN :
-                role.equals(User.Role.MANAGER.toString()) ? User.Role.MANAGER : User.Role.USER;
-    }
+
 
     public KindergartenDto getControlKindergarten(Long userId) {
         User user = getUser(userId);
@@ -189,40 +183,13 @@ public class UsersService {
 
         List<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContains(user);
 
-        List<KindergartenDto> kindergartenDtoList = new ArrayList<>();
+        List<KindergartenDto> kindergartenDtoList = kindergartenDtoListMapper.toListWithPhones(kindergartens);
 
-        for (Kindergarten kindergarten : kindergartens) {
-            User manager = usersRepository.findFirstUserByControlKindergartenContains(kindergarten)
-                    .orElseThrow(() ->
-                            new RestException(HttpStatus.NOT_FOUND, "Manager of kindergarten with id <" + kindergarten.getId() + "> not found"));
-            kindergartenDtoList.add(KindergartenDto.from(kindergarten, manager.getPhone()));
-        }
         return KindergartenDtoList.builder()
                 .kindergartens(kindergartenDtoList)
                 .build();
 
     }
 
-    public KindergartenDto addKindergartenToFavorites(Long userId, Long kindergartenId) {
 
-        User user = getUser(userId);
-
-        Kindergarten kindergarten = getKindergarten(kindergartenId);
-
-        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
-
-        if (!kindergartens.add(kindergarten)){
-            throw new RestException(HttpStatus.CONFLICT,"This kindergarten has already been added to the user");
-        }
-
-        user.setFavorities(kindergartens);
-        usersRepository.save(user);
-        return KindergartenDto.from(kindergarten);
-    }
-
-    public Kindergarten getKindergarten(Long kindergartenId) {
-        Kindergarten kindergarten = kindergartensRepository.findById(kindergartenId)
-                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND,"Kindergarten with id<" + kindergartenId + "> not found"));
-        return kindergarten;
-    }
 }

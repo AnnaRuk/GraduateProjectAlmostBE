@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tags(value = @Tag(name = "Kindergarten"))
 @RequestMapping("/api/kindergartens")
-public interface KindergartenApi {
+public interface KindergartensApi {
     @Operation(summary = "Getting all kindergartens", description = "Available to everyone")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",

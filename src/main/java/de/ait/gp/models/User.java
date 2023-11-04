@@ -1,12 +1,18 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.Role;
 import de.ait.gp.dto.user.UpdateUserDto;
+import de.ait.gp.utils.UserUtils;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+
+import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 
 @Getter
 @Setter
@@ -18,12 +24,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class User {
 
-    public enum Role {
-        ADMIN, USER, MANAGER
-    }
-    public enum Gender {
-        MALE, FEMALE, DIVERSE
-    }
     public enum State {
        NOT_CONFIRMED, CONFIRMED, DELETED ,BANNED
     }
@@ -114,21 +114,18 @@ public class User {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
-    public User updateFrom(UpdateUserDto updateUserDto) {
+    @SneakyThrows
+    public User updateFrom(UpdateUserDto updateUserDto){
         this.setFirstName(updateUserDto.getFirstName());
         this.setLastName(updateUserDto.getLastName());
         this.setEmail(updateUserDto.getEmail());
         this.setAddress(updateUserDto.getAddress());
-        this.setGender(getEnumGender(updateUserDto.getGender()));
+        this.setGender(UserUtils.getEnumGender(updateUserDto.getGender()));
         this.setPostcode(updateUserDto.getPostCode());
-        this.setDateOfBirth(LocalDate.parse(updateUserDto.getDateOfBirth()));
         this.setCity(updateUserDto.getCity());
         this.setPhone(updateUserDto.getPhone());
+        this.setDateOfBirth(LocalDate.parse(updateUserDto.getDateOfBirth(), DATE_FORMAT));
         return this;
     }
 
-    public Gender getEnumGender(String gender) {
-        return gender.equals(Gender.MALE.toString()) ? Gender.MALE :
-                gender.equals(Gender.FEMALE.toString()) ? Gender.FEMALE : Gender.DIVERSE;
-    }
 }
