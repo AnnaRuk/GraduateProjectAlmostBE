@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static de.ait.gp.dto.Gender.NOT_SELECTED;
 import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 
 @Data
@@ -71,7 +72,7 @@ public class UserDto {
                 .city(user.getCity())
                 .phone(user.getPhone())
                 .dateOfBirth(user.getDateOfBirth() != null ? user.getDateOfBirth().format(DATE_FORMAT) : null)
-                .gender(user.getGender().toString())
+                .gender(user.getGender()!=null ? user.getGender().toString() : NOT_SELECTED.toString())
                 .build();
     }
 

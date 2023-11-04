@@ -63,6 +63,11 @@ public class UserControllers implements UsersApi {
     }
 
     @Override
+    public KindergartenDtoList getAllChildren(AuthenticatedUser user) {
+        return null;
+    }
+
+    @Override
     public KindergartenDto deleteKindergartenFromFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenFromFavorite) {
         return usersService.deleteKindergartenFromFavorites(user.getId(),kindergartenFromFavorite.getKindergartenId());
     }
