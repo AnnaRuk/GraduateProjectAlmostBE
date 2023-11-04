@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.GET,"/api/kindergartens/**").permitAll()
                 .antMatchers("/api/users").hasAnyAuthority("ADMIN")
                 .antMatchers("/api/profile/controlKindergarten").hasAnyAuthority("MANAGER")
+                .antMatchers("/api/profile/favorites").hasAnyAuthority("USER")
                 .antMatchers("/api/**").authenticated();
 
 

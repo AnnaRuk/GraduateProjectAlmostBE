@@ -1,10 +1,7 @@
 package de.ait.gp.controllers.api;
 
 
-import de.ait.gp.dto.kindergarten.KindergartenDto;
-import de.ait.gp.dto.kindergarten.KindergartenDtoList;
-import de.ait.gp.dto.kindergarten.NewKindergartenDto;
-import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
+import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.user.UpdateUserDto;
@@ -25,7 +22,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 
 @Tags(value = @Tag(name = "Users"))
@@ -147,6 +143,26 @@ public interface UsersApi {
 
     @GetMapping ("/profile/favorities")
     KindergartenDtoList getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+    @Operation(summary = "Adding new favorite kindergarten to User", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "kindergarten has been added",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "This kindergarten has already been added to the user",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/profile/favorities")
+    KindergartenDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                               @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 }
 
 

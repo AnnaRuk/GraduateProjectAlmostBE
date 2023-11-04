@@ -20,4 +20,7 @@ Optional<Kindergarten> findFirstByTitleAndCityAndAddress(String title, String ci
 Optional<Kindergarten> findKindergartenByManager_Id(Long userId);
 
     List<Kindergarten> findAllByChoosersContains(User user);
+    Set<Kindergarten> findAllByChoosersId(Long id);
+    Optional<Kindergarten> findById(Long id);
+
 }

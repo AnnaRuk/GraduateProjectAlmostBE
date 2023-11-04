@@ -65,5 +65,17 @@ public class KindergartenDto {
                 .build();
     }
 
+    public static KindergartenDto from(Kindergarten kindergarten) {
+        return KindergartenDto.builder()
+                .title(kindergarten.getTitle())
+                .city(kindergarten.getCity())
+                .postcode(kindergarten.getPostcode())
+                .address(kindergarten.getAddress())
+                .capacity(kindergarten.getCapacity())
+                .linkImg(kindergarten.getLinkImg())
+                .description(kindergarten.getDescription())
+                .build();
+    }
+
 
 }
