@@ -16,7 +16,6 @@ import de.ait.gp.models.User;
 import de.ait.gp.repositories.ConfirmationCodeRepository;
 import de.ait.gp.repositories.KindergartensRepository;
 import de.ait.gp.repositories.UsersRepository;
-import de.ait.gp.utils.KindergartenDtoListMapper;
 import de.ait.gp.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +44,7 @@ public class UsersService {
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final ConfirmMailSender confirmMailSender;
     private final MailTemplatesUtil mailTemplatesUtil;
-    private final KindergartenDtoListMapper kindergartenDtoListMapper;
+
 
     @Value("${base.url}")
     private String baseUrl;
@@ -119,7 +118,7 @@ public class UsersService {
         User user = getUser(userId);
         Kindergarten kindergarten = from(newKindergarten, user);
         kindergartensRepository.save(kindergarten);
-        return KindergartenDto.from(kindergarten, user.getPhone());
+        return KindergartenDto.from(kindergarten);
     }
 
     public User getUser(Long userId) {
@@ -128,13 +127,11 @@ public class UsersService {
     }
 
 
-
     public KindergartenDto getControlKindergarten(Long userId) {
-        User user = getUser(userId);
         Kindergarten kindergarten = kindergartensRepository.findKindergartenByManager_Id(userId)
                 .orElseThrow(() ->
                         new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id <" + userId + "> not found"));
-        return KindergartenDto.from(kindergarten, user.getPhone());
+        return KindergartenDto.from(kindergarten);
     }
 
     public UserDto updateUser(Long userID, UpdateUserDto updateUserDto) {
@@ -153,8 +150,6 @@ public class UsersService {
     }
 
     public KindergartenDto updateControlKindergarten(Long userId, UpdateKindergartenDto updateKindergartenDto) {
-        User user = getUser(userId);
-
         String title = updateKindergartenDto.getTitle();
         String city = updateKindergartenDto.getCity();
         String address = updateKindergartenDto.getAddress();
@@ -176,7 +171,7 @@ public class UsersService {
 
         kindergartensRepository.save(kindergarten.updateFrom(updateKindergartenDto));
 
-        return KindergartenDto.from(kindergarten, user.getPhone());
+        return KindergartenDto.from(kindergarten);
     }
 
     public KindergartenDtoList getAllFavoriteKindergartens(Long id) {
@@ -185,7 +180,7 @@ public class UsersService {
 
         List<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContains(user);
 
-        List<KindergartenDto> kindergartenDtoList = kindergartenDtoListMapper.toListWithPhones(kindergartens);
+        List<KindergartenDto> kindergartenDtoList = from(kindergartens);
 
         return KindergartenDtoList.builder()
                 .kindergartens(kindergartenDtoList)
@@ -200,19 +195,19 @@ public class UsersService {
         Kindergarten kindergarten = getKindergarten(kindergartenId);
         Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
 
-        if (!kindergartens.add(kindergarten)){
-            throw new RestException(HttpStatus.CONFLICT,"This kindergarten has already been added to the user");
+        if (!kindergartens.add(kindergarten)) {
+            throw new RestException(HttpStatus.CONFLICT, "This kindergarten has already been added to the user");
         }
 
         user.setFavorities(kindergartens);
         usersRepository.save(user);
-        return KindergartenDto.from(kindergarten);
+        return from(kindergarten);
     }
 
     private Kindergarten getKindergarten(Long kindergartenId) {
-        Kindergarten kindergarten = kindergartensRepository.findById(kindergartenId)
-                .orElseThrow(() ->  new RestException(HttpStatus.NOT_FOUND,"Kindergarten with id<" + kindergartenId + "> not found"));
-        return kindergarten;
+        return kindergartensRepository.findById(kindergartenId)
+                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten with id<" + kindergartenId + "> not found"));
+
     }
 
 
@@ -222,8 +217,8 @@ public class UsersService {
         Kindergarten kindergarten = getKindergarten(kindergartenId);
         Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
 
-        if (!kindergartens.remove(kindergarten)){
-            throw new RestException(HttpStatus.BAD_REQUEST,"This kindergarten with id<" + kindergartenId + "> not found in favorite");
+        if (!kindergartens.remove(kindergarten)) {
+            throw new RestException(HttpStatus.BAD_REQUEST, "This kindergarten with id<" + kindergartenId + "> not found in favorite");
         }
 
         user.setFavorities(kindergartens);

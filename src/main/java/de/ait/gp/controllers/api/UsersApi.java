@@ -168,6 +168,21 @@ public interface UsersApi {
     KindergartenDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 
+    @Operation(summary = "Get all user's children", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDtoList.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+
+    @GetMapping ("/profile/children")
+    KindergartenDtoList getAllChildren(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
     @Operation(summary = "Delete kindergaten from favorites", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -189,5 +204,6 @@ public interface UsersApi {
                                                     @RequestBody KindergartenToFavoriteDto deleteKindergarten);
 
 }
+
 
 

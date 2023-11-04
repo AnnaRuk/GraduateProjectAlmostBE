@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "Kindergarten List")
+@Schema(name = "KindergartenList")
 public class KindergartenDtoList {
 
     @NotNull

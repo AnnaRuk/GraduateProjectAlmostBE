@@ -2,14 +2,12 @@ package de.ait.gp.dto.kindergarten;
 
 import de.ait.gp.models.Kindergarten;
 import io.swagger.v3.oas.annotations.media.Schema;
-import  lombok.*;
+import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -19,6 +17,8 @@ import java.util.stream.Collectors;
 @Builder
 @Schema(name = "Kindergarten")
 public class KindergartenDto {
+    @Schema(description = "kindergarten's identifier", example = "1")
+    private Long id;
     @NotBlank
     @NotEmpty
     @Schema(name = "title", description = "title of Kindergarten", example = "Title")
@@ -52,21 +52,9 @@ public class KindergartenDto {
     private String description;
 
 
-    public static KindergartenDto from(Kindergarten kindergarten, String phone) {
-        return KindergartenDto.builder()
-                .title(kindergarten.getTitle())
-                .city(kindergarten.getCity())
-                .postcode(kindergarten.getPostcode())
-                .address(kindergarten.getAddress())
-                .capacity(kindergarten.getCapacity())
-                .linkImg(kindergarten.getLinkImg())
-                .description(kindergarten.getDescription())
-                .phone(phone)
-                .build();
-    }
-
     public static KindergartenDto from(Kindergarten kindergarten) {
         return KindergartenDto.builder()
+                .id(kindergarten.getId())
                 .title(kindergarten.getTitle())
                 .city(kindergarten.getCity())
                 .postcode(kindergarten.getPostcode())
@@ -74,8 +62,16 @@ public class KindergartenDto {
                 .capacity(kindergarten.getCapacity())
                 .linkImg(kindergarten.getLinkImg())
                 .description(kindergarten.getDescription())
+                .phone(kindergarten.getManager().getPhone())
                 .build();
     }
+    public static List<KindergartenDto> from(List<Kindergarten> kindergartens) {
+        return kindergartens.stream()
+                .map(KindergartenDto::from)
+                .toList();
+    }
+
+
 
 
 }
