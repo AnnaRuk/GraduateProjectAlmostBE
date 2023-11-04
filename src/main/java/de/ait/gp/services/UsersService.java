@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static de.ait.gp.models.Kindergarten.from;
@@ -189,6 +190,28 @@ public class UsersService {
                 .kindergartens(kindergartenDtoList)
                 .build();
 
+    }
+
+    public KindergartenDto addKindergartenToFavorites(Long userId, Long kindergartenId) {
+
+        User user = getUser(userId);
+
+        Kindergarten kindergarten = getKindergarten(kindergartenId);
+        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
+
+        if (!kindergartens.add(kindergarten)){
+            throw new RestException(HttpStatus.CONFLICT,"This kindergarten has already been added to the user");
+        }
+
+        user.setFavorities(kindergartens);
+        usersRepository.save(user);
+        return KindergartenDto.from(kindergarten);
+    }
+
+    private Kindergarten getKindergarten(Long kindergartenId) {
+        Kindergarten kindergarten = kindergartensRepository.findById(kindergartenId)
+                .orElseThrow(() ->  new RestException(HttpStatus.NOT_FOUND,"Kindergarten with id<" + kindergartenId + "> not found"));
+        return kindergarten;
     }
 
 
