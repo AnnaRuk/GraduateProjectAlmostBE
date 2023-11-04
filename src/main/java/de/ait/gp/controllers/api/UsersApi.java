@@ -145,7 +145,7 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
 
-    @GetMapping ("/profile/favorities")
+    @GetMapping ("/profile/favorites")
     KindergartenDtoList getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 }
 

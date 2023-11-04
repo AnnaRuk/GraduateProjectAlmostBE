@@ -1,11 +1,17 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.child.UpdateChildDto;
+import de.ait.gp.utils.UserUtils;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+
+import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 
 
 @Getter
@@ -17,9 +23,6 @@ import java.util.Set;
 @AllArgsConstructor
 public class Child {
 
-    public enum Gender {
-        MALE, FEMALE, DIVERSE
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,11 +31,12 @@ public class Child {
     @Column(length = 20)
     private String firstName;
 
+    @Column(length = 20)
+    private String lastName;
+
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @Column(length = 20)
-    private String lastName;
 
     @Column(nullable = false)
     private LocalDate dateOfBirth;
@@ -58,5 +62,13 @@ public class Child {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+    @SneakyThrows
+    public Child updateFrom(UpdateChildDto updateChildDto) {
+        this.setFirstName(updateChildDto.getFirstName());
+        this.setLastName(updateChildDto.getLastName());
+        this.setGender(UserUtils.getEnumGender(updateChildDto.getGender()));
+        this.setDateOfBirth(LocalDate.parse(updateChildDto.getDateOfBirth(), DATE_FORMAT));
+        return this;
     }
 }

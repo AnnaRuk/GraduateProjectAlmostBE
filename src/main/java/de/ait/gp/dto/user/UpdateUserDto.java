@@ -1,16 +1,9 @@
 package de.ait.gp.dto.user;
 
-import de.ait.gp.models.User;
-import de.ait.gp.models.User.Gender;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-import net.bytebuddy.asm.Advice;
 
-
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.*;
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -32,8 +25,8 @@ public class UpdateUserDto {
     private String lastName;
 
     @NotNull
-    @Pattern(regexp = "^(?:(?:19|20)\\d\\d)-(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2\\d|3[0-1])$")
-    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "1998-03-08")
+    @Pattern(regexp = "^(\\d{2}\\.\\d{2}\\.\\d{4}( \\d{2}:\\d{2}:\\d{2}:\\d{1})?)$")
+    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "05.03.1990")
     private String dateOfBirth;
 
     @Email
