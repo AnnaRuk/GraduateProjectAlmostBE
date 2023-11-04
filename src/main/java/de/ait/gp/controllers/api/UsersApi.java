@@ -1,12 +1,12 @@
 package de.ait.gp.controllers.api;
 
 
+import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartenDtoList;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
 import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import de.ait.gp.dto.user.NewUserDto;
-import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
 import de.ait.gp.secutity.details.AuthenticatedUser;
@@ -20,12 +20,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 
 @Tags(value = @Tag(name = "Users"))
