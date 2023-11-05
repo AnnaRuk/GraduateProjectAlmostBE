@@ -41,7 +41,7 @@ public class UpdateUserDto {
 
     @NotEmpty
     @NotBlank
-    @Schema(name = "address", description = "user's addres", example = "Berlinstr. 8")
+    @Schema(name = "address", description = "user's address", example = "Berlinstr. 8")
     private String address;
 
     @NotEmpty

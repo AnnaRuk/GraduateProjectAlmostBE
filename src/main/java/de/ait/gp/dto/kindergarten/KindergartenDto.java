@@ -62,7 +62,7 @@ public class KindergartenDto {
                 .capacity(kindergarten.getCapacity())
                 .linkImg(kindergarten.getLinkImg())
                 .description(kindergarten.getDescription())
-                .phone(kindergarten.getManager().getPhone())
+                .phone(kindergarten.getManager()!=null ? kindergarten.getManager().getPhone() : null)
                 .build();
     }
     public static List<KindergartenDto> from(List<Kindergarten> kindergartens) {

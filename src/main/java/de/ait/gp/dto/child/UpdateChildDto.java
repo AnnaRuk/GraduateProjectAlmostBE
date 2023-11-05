@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 @Getter
 @Setter
@@ -14,6 +15,9 @@ import javax.validation.constraints.Pattern;
 @Builder
 @Schema(name = "UpdateChild")
 public class UpdateChildDto {
+    @NotNull
+    @Schema(description = "Child's identifier", example = "1")
+    private Long id;
     @NotBlank
     @NotEmpty
     @Schema(name = "firstName", description = "child's firstname", example = "Sergey")

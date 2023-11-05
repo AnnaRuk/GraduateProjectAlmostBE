@@ -1,6 +1,10 @@
 package de.ait.gp.controllers;
 
 import de.ait.gp.controllers.api.UsersApi;
+import de.ait.gp.dto.child.ChildDto;
+import de.ait.gp.dto.child.ChildDtoList;
+import de.ait.gp.dto.child.NewChildDto;
+import de.ait.gp.dto.child.UpdateChildDto;
 import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
@@ -8,7 +12,7 @@ import de.ait.gp.dto.user.UserDto;
 import de.ait.gp.secutity.details.AuthenticatedUser;
 import de.ait.gp.services.UsersService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
@@ -58,17 +62,27 @@ public class UserControllers implements UsersApi {
     }
 
     @Override
-    public KindergartenDto addKindergartenToFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenToFavoriteDto) {
+    public KindergartenDtoList addKindergartenToFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenToFavoriteDto) {
         return usersService.addKindergartenToFavorites(user.getId(), kindergartenToFavoriteDto.getKindergartenId());
     }
 
     @Override
-    public KindergartenDtoList getAllChildren(AuthenticatedUser user) {
-        return null;
+    public ChildDtoList getAllChildren(AuthenticatedUser user) {
+        return usersService.getAllChildren(user.getId());
     }
 
     @Override
-    public KindergartenDto deleteKindergartenFromFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenFromFavorite) {
-        return usersService.deleteKindergartenFromFavorites(user.getId(),kindergartenFromFavorite.getKindergartenId());
+    public ChildDtoList addNewChildToUser(AuthenticatedUser user, NewChildDto newChildDto) {
+        return usersService.addNewChildToUser(user.getId(), newChildDto);
+    }
+
+    @Override
+    public ChildDto updateChildInUser(AuthenticatedUser user, UpdateChildDto updateChildDto) {
+        return usersService.updateChildInUser(user.getId(), updateChildDto);
+    }
+
+    @Override
+    public KindergartenDto removeKindergartenFromFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenFromFavorite) {
+        return usersService.removeKindergartenFromFavorites(user.getId(),kindergartenFromFavorite.getKindergartenId());
     }
 }

@@ -53,7 +53,7 @@ public class Kindergarten {
     private User manager;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "favorities")
+    @ManyToMany(mappedBy = "favorites")
     private Set<User> choosers;
 
     @Override

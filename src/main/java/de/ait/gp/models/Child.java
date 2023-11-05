@@ -1,6 +1,7 @@
 package de.ait.gp.models;
 
 import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.child.NewChildDto;
 import de.ait.gp.dto.child.UpdateChildDto;
 import de.ait.gp.utils.UserUtils;
 import lombok.*;
@@ -11,6 +12,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
+import static de.ait.gp.dto.Gender.NOT_SELECTED;
 import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 
 
@@ -70,5 +72,14 @@ public class Child {
         this.setGender(UserUtils.getEnumGender(updateChildDto.getGender()));
         this.setDateOfBirth(LocalDate.parse(updateChildDto.getDateOfBirth(), DATE_FORMAT));
         return this;
+    }
+    public static Child from(User user, NewChildDto newChild) {
+        return Child.builder()
+                .firstName(newChild.getFirstName())
+                .lastName(newChild.getLastName())
+                .gender(newChild.getGender()!=null ? UserUtils.getEnumGender(newChild.getGender()) : NOT_SELECTED)
+                .dateOfBirth(LocalDate.parse(newChild.getDateOfBirth(), DATE_FORMAT))
+                .parent(user)
+                .build();
     }
 }

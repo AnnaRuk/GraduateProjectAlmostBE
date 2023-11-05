@@ -12,16 +12,19 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-public interface KindergartensRepository extends JpaRepository<Kindergarten,Long> {
-@Query("select distinct city from Kindergarten group by city")
-    List<String> findAllCities();
-boolean existsByTitleAndCityAndAddress(String title, String city, String address);
-Optional<Kindergarten> findFirstByTitleAndCityAndAddress(String title, String city, String address);
-Optional<Kindergarten> findKindergartenByManager_Id(Long userId);
+public interface KindergartensRepository extends JpaRepository<Kindergarten, Long> {
+    @Query("select distinct city from Kindergarten group by city order by city asc")
+    List<String> findAllCitiesOrderByCityAsc();
 
-    List<Kindergarten> findAllByChoosersContains(User user);
-    Set<Kindergarten> findAllByChoosersId(Long id);
-    Optional<Kindergarten> findById(Long id);
+    boolean existsByTitleAndCityAndAddress(String title, String city, String address);
+
+    Optional<Kindergarten> findFirstByTitleAndCityAndAddress(String title, String city, String address);
+
+    Optional<Kindergarten> findKindergartenByManager_Id(Long userId);
 
 
+    Set<Kindergarten> findAllByChoosersContainsOrderById(User user);
+
+
+    List<Kindergarten> findAllByOrderByIdAsc();
 }

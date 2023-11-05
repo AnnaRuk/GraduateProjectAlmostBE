@@ -23,15 +23,17 @@ public class KindergartensService {
 
 
     public KindergartensWithCitiesDto getAllKindergartensWithCities() {
-        List<Kindergarten> kindergartenList = kindergartensRepository.findAll();
+        List<Kindergarten> kindergartenList = kindergartensRepository.findAllByOrderByIdAsc()
+;
         List<KindergartenDto> kindergartenDtoList = from(kindergartenList);
-        List<String> cities = kindergartensRepository.findAllCities();
+        List<String> cities = kindergartensRepository.findAllCitiesOrderByCityAsc();
 
         return KindergartensWithCitiesDto.builder()
                 .KindergartenDTOList(kindergartenDtoList)
                 .cities(cities)
                 .build();
     }
+
 
     public KindergartenDto findKindergarten(Long KindergartenId) {
 

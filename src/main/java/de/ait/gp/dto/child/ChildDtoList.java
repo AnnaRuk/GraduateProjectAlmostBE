@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Schema(name = "ChildLList")
-public class ChildLDtoList {
+public class ChildDtoList {
     @NotNull
     @Schema(name = "children", description = "list of children")
     List<ChildDto> children;

@@ -74,12 +74,12 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "favorities",
+            name = "favorites",
             joinColumns = @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "kindergarten_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "kindergarten_id"} )
     )
-    private Set<Kindergarten> favorities;
+    private Set<Kindergarten> favorites;
 
     @OneToMany(mappedBy = "userByCode")
     @ToString.Exclude

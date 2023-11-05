@@ -46,7 +46,7 @@ public class UserDto {
 
     @Schema(name = "postCode", description = "user's postcode", example = "46446")
     private String postCode;
-    @Schema(name = "address", description = "user's addres", example = "Berlinstr. 8")
+    @Schema(name = "address", description = "user's address", example = "Berlinstr. 8")
     private String address;
     @Schema(name = "city", description = "user's city", example = "Berlin")
     private String city;

@@ -1,7 +1,10 @@
 package de.ait.gp.controllers.api;
 
 
-
+import de.ait.gp.dto.child.ChildDto;
+import de.ait.gp.dto.child.ChildDtoList;
+import de.ait.gp.dto.child.NewChildDto;
+import de.ait.gp.dto.child.UpdateChildDto;
 import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
@@ -22,6 +25,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.tags.Tags;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,6 +79,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class))),
     })
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/profile/controlKindergarten")
     KindergartenDto addControlKindergartenToManager(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
@@ -91,12 +96,13 @@ public interface UsersApi {
                 content = @Content(mediaType = "application/json",
                         schema = @Schema(implementation = StandardResponseDto.class)))
     })
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @GetMapping("/profile/controlKindergarten")
     KindergartenDto getControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
     @Operation(summary = "Updating user's info", description = "Available to everyone")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "20o",
+            @ApiResponse(responseCode = "200",
                     description = "Success",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = UserDto.class))),
@@ -129,6 +135,7 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class))),
 
     })
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @PutMapping("/profile/controlKindergarten")
     KindergartenDto updateControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                       @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);
@@ -144,16 +151,16 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-
+    @PreAuthorize("hasAnyAuthority('USER')")
     @GetMapping ("/profile/favorites")
     KindergartenDtoList getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
-    @Operation(summary = "Adding new favorite kindergarten to User", description = "Available to User")
+    @Operation(summary = "Adding kindergarten to User's favorites", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
                     description = "kindergarten has been added",
                     content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = KindergartenDto.class))),
+                            schema = @Schema(implementation = KindergartenDtoList.class))),
             @ApiResponse(responseCode = "409",
                     description = "This kindergarten has already been added to the user",
                     content = @Content(mediaType = "application/json",
@@ -164,26 +171,12 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/profile/favorities")
-    KindergartenDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+    @PostMapping("/profile/favorites")
+    @PreAuthorize("hasAnyAuthority('USER')")
+    KindergartenDtoList addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 
-    @Operation(summary = "Get all user's children", description = "Available to User")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200",
-                    description = "Success",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = KindergartenDtoList.class))),
-            @ApiResponse(responseCode = "404",
-                    description = "Not Found",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = StandardResponseDto.class)))
-    })
-
-    @GetMapping ("/profile/children")
-    KindergartenDtoList getAllChildren(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
-
-    @Operation(summary = "Delete kindergaten from favorites", description = "Available to User")
+    @Operation(summary = "Delete kindergarten from User's favorites", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "kindergarten was deleted",
@@ -198,11 +191,74 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorsDto.class)))
     })
-
-    @DeleteMapping("/profile/favorities")
-    KindergartenDto deleteKindergartenFromFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @DeleteMapping("/profile/favorites")
+    KindergartenDto removeKindergartenFromFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                     @RequestBody KindergartenToFavoriteDto deleteKindergarten);
 
+    @Operation(summary = "Get all user's children", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChildDtoList.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @GetMapping ("/profile/children")
+    ChildDtoList getAllChildren(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+    @Operation(summary = "Adding new Child to user", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "child has been added",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChildDtoList.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "This child with this data already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/profile/children")
+    @PreAuthorize("hasAnyAuthority('USER')")
+    ChildDtoList addNewChildToUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                   @RequestBody @Valid NewChildDto newChildDto);
+    @Operation(summary = "Adding new Child to user", description = "Available to User")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "child has been added",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ChildDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class))),
+            @ApiResponse(responseCode = "409",
+                    description = "This child with this data already exists",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+
+    @PutMapping("/profile/children")
+    @PreAuthorize("hasAnyAuthority('USER')")
+    ChildDto updateChildInUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                    @RequestBody @Valid UpdateChildDto updateChildDto);
 }
 
 

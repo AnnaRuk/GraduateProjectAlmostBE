@@ -1,5 +1,9 @@
 package de.ait.gp.services;
 
+import de.ait.gp.dto.child.ChildDto;
+import de.ait.gp.dto.child.ChildDtoList;
+import de.ait.gp.dto.child.NewChildDto;
+import de.ait.gp.dto.child.UpdateChildDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartenDtoList;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
@@ -10,9 +14,11 @@ import de.ait.gp.dto.user.UserDto;
 import de.ait.gp.exceptions.RestException;
 import de.ait.gp.mail.ConfirmMailSender;
 import de.ait.gp.mail.MailTemplatesUtil;
+import de.ait.gp.models.Child;
 import de.ait.gp.models.ConfirmationCode;
 import de.ait.gp.models.Kindergarten;
 import de.ait.gp.models.User;
+import de.ait.gp.repositories.ChildrenRepository;
 import de.ait.gp.repositories.ConfirmationCodeRepository;
 import de.ait.gp.repositories.KindergartensRepository;
 import de.ait.gp.repositories.UsersRepository;
@@ -30,8 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static de.ait.gp.models.Kindergarten.from;
 import static de.ait.gp.dto.kindergarten.KindergartenDto.from;
+import static de.ait.gp.models.Kindergarten.from;
 
 @EnableAsync
 @Service
@@ -39,6 +45,7 @@ import static de.ait.gp.dto.kindergarten.KindergartenDto.from;
 public class UsersService {
 
     private final UsersRepository usersRepository;
+    private final ChildrenRepository childrenRepository;
     private final PasswordEncoder passwordEncoder;
     private final KindergartensRepository kindergartensRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
@@ -98,7 +105,7 @@ public class UsersService {
 
         ConfirmationCode confirmationCode = confirmationCodeRepository.findByCodeAndExpiredDateTimeAfter(code, LocalDateTime.now())
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Code: " + code + " not found or is expired"));
-        User user = usersRepository.findFirstByCodesContains(confirmationCode)
+        User user = usersRepository.findFirstByCodesContainsOrderById(confirmationCode)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User by code: " + confirmationCode + " not found"));
 
         user.setState(User.State.CONFIRMED);
@@ -115,13 +122,13 @@ public class UsersService {
         )) {
             throw new RestException(HttpStatus.CONFLICT, "Kindergarten with this data already exists");
         }
-        User user = getUser(userId);
+        User user = getUserOrThrow(userId);
         Kindergarten kindergarten = from(newKindergarten, user);
         kindergartensRepository.save(kindergarten);
         return KindergartenDto.from(kindergarten);
     }
 
-    public User getUser(Long userId) {
+    public User getUserOrThrow(Long userId) {
         return usersRepository.findById(userId)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User with id <" + userId + "> not found"));
     }
@@ -136,7 +143,7 @@ public class UsersService {
 
     public UserDto updateUser(Long userID, UpdateUserDto updateUserDto) {
 
-        User user = getUser(userID);
+        User user = getUserOrThrow(userID);
         if (usersRepository.existsByEmail(updateUserDto.getEmail())) {
             User userWithEmail = usersRepository.findByEmail(updateUserDto.getEmail()).orElseThrow();
             if (userID.intValue() != userWithEmail.getId().intValue()) {
@@ -160,8 +167,7 @@ public class UsersService {
 
         if (kindergartensRepository.existsByTitleAndCityAndAddress(title, city, address)) {
 
-            Kindergarten kindergartenWithData = kindergartensRepository
-                    .findFirstByTitleAndCityAndAddress(title, city, address)
+            Kindergarten kindergartenWithData = kindergartensRepository.findFirstByTitleAndCityAndAddress(title, city, address)
                     .orElseThrow();
 
             if (kindergarten.getId().intValue() != kindergartenWithData.getId().intValue()) {
@@ -174,55 +180,109 @@ public class UsersService {
         return KindergartenDto.from(kindergarten);
     }
 
-    public KindergartenDtoList getAllFavoriteKindergartens(Long id) {
+    public KindergartenDtoList getAllFavoriteKindergartens(Long userId) {
 
-        User user = getUser(id);
+        User user = getUserOrThrow(userId);
 
-        List<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContains(user);
-
-        List<KindergartenDto> kindergartenDtoList = from(kindergartens);
+        List<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContainsOrderById(user)
+                .stream()
+                .toList();
 
         return KindergartenDtoList.builder()
-                .kindergartens(kindergartenDtoList)
+                .kindergartens(from(kindergartens))
                 .build();
 
     }
 
-    public KindergartenDto addKindergartenToFavorites(Long userId, Long kindergartenId) {
+    public KindergartenDtoList addKindergartenToFavorites(Long userId, Long kindergartenId) {
 
-        User user = getUser(userId);
+        User user = getUserOrThrow(userId);
 
-        Kindergarten kindergarten = getKindergarten(kindergartenId);
-        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
+        Kindergarten kindergarten = getKindergartenOrThrow(kindergartenId);
+        Set<Kindergarten> favorites = kindergartensRepository.findAllByChoosersContainsOrderById(user);
 
-        if (!kindergartens.add(kindergarten)) {
+        if (!user.getFavorites().add(kindergarten)) {
             throw new RestException(HttpStatus.CONFLICT, "This kindergarten has already been added to the user");
         }
 
-        user.setFavorities(kindergartens);
+        user.setFavorites(favorites);
         usersRepository.save(user);
-        return from(kindergarten);
+        return KindergartenDtoList.builder()
+                .kindergartens(KindergartenDto.from(favorites.stream().toList()))
+                .build();
     }
 
-    private Kindergarten getKindergarten(Long kindergartenId) {
+    private Kindergarten getKindergartenOrThrow(Long kindergartenId) {
         return kindergartensRepository.findById(kindergartenId)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten with id<" + kindergartenId + "> not found"));
 
     }
 
 
-    public KindergartenDto deleteKindergartenFromFavorites(Long userId, Long kindergartenId) {
+    public KindergartenDto removeKindergartenFromFavorites(Long userId, Long kindergartenId) {
 
-        User user = getUser(userId);
-        Kindergarten kindergarten = getKindergarten(kindergartenId);
-        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersId(userId);
+        User user = getUserOrThrow(userId);
+        Kindergarten kindergarten = getKindergartenOrThrow(kindergartenId);
+        Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContainsOrderById(user);
 
         if (!kindergartens.remove(kindergarten)) {
             throw new RestException(HttpStatus.BAD_REQUEST, "This kindergarten with id<" + kindergartenId + "> not found in favorite");
         }
 
-        user.setFavorities(kindergartens);
+        user.setFavorites(kindergartens);
         usersRepository.save(user);
-        return KindergartenDto.from(kindergarten);
+        return from(kindergarten);
+    }
+
+    public ChildDtoList getAllChildren(Long userId) {
+        User user = getUserOrThrow(userId);
+        return ChildDtoList.builder()
+                .children(ChildDto.from(childrenRepository.findAllByParentOrderById(user).stream().toList()))
+                .build();
+    }
+
+    public ChildDtoList addNewChildToUser(Long userId, NewChildDto newChildDto) {
+        User user = getUserOrThrow(userId);
+        Child newChild = Child.from(user, newChildDto);
+        if (childrenRepository.existsByFirstNameAndLastNameAndDateOfBirth(
+                newChild.getFirstName(),
+                newChild.getLastName(),
+                newChild.getDateOfBirth()
+        )) {
+            throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists ");
+        }
+        if (!user.getChildren().add(newChild)) {
+            throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists in children of User with id<" + userId + ">");
+        }
+        childrenRepository.save(newChild);
+        return ChildDtoList.builder()
+                .children(ChildDto.from(childrenRepository.findAllByParentOrderById(user).stream().toList()))
+                .build();
+    }
+
+    public ChildDto updateChildInUser(Long userId, UpdateChildDto updateChildDto) {
+        User user = getUserOrThrow(userId);
+        Child updateChild = getChildOrThrow(updateChildDto.getId()).updateFrom(updateChildDto);
+        if (childrenRepository.existsByFirstNameAndLastNameAndDateOfBirth(
+                updateChild.getFirstName(),
+                updateChild.getLastName(),
+                updateChild.getDateOfBirth()
+        )) {
+            Child child = childrenRepository.findByParentAndId(user, updateChildDto.getId())
+                    .orElseThrow(() ->
+                            new RestException(HttpStatus.NOT_FOUND,
+                                    "Child with id<" + updateChildDto.getId() + " of user with id <" + userId + "> not found"));
+
+            if (child.getId().intValue() != updateChild.getId().intValue()) {
+                throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists ");
+            }
+        }
+        childrenRepository.save(updateChild);
+        return ChildDto.from(updateChild);
+    }
+
+    public Child getChildOrThrow(Long childId) {
+        return childrenRepository.findById(childId)
+                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Child with id<" + childId + "> not found"));
     }
 }
