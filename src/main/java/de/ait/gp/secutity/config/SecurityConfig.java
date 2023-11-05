@@ -36,10 +36,11 @@ public class SecurityConfig {
                 .antMatchers("/api/users/confirm/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/kindergartens/**").permitAll()
                 .antMatchers("/api/users").hasAnyAuthority("ADMIN")
+                .antMatchers("/api/profile").authenticated()
                 .antMatchers("/api/profile/controlKindergarten").hasAnyAuthority("MANAGER")
                 .antMatchers("/api/profile/favorites").hasAnyAuthority("USER")
                 .antMatchers("/api/profile/children").hasAnyAuthority("USER")
-                .antMatchers("/api/**").authenticated();
+                .antMatchers("/api/profile/requests").hasAnyAuthority("USER", "MANAGER");
 
 
         httpSecurity.exceptionHandling()

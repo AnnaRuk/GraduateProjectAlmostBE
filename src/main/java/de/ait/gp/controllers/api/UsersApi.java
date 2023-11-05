@@ -214,7 +214,7 @@ public interface UsersApi {
     @Operation(summary = "Adding new Child to user", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
-                    description = "child has been added",
+                    description = "child has been added to User",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChildDtoList.class))),
             @ApiResponse(responseCode = "400",
@@ -238,7 +238,7 @@ public interface UsersApi {
     @Operation(summary = "Updating Child's info in User", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
-                    description = "child has been added",
+                    description = "child's info updated",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChildDto.class))),
             @ApiResponse(responseCode = "400",
@@ -259,7 +259,12 @@ public interface UsersApi {
     @PreAuthorize("hasAnyAuthority('USER')")
     ChildDto updateChildInUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                     @RequestBody @Valid UpdateChildDto updateChildDto);
+
+
+
 }
+
+
 
 
 

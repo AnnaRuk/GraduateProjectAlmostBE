@@ -124,6 +124,10 @@ public class UsersService {
             throw new RestException(HttpStatus.CONFLICT, "Kindergarten with this data already exists");
         }
         User user = getUserOrThrow(userId);
+
+        if (!user.getControlKindergarten().isEmpty()) {
+            throw new RestException(HttpStatus.CONFLICT, "Manager with id<" + userId+"> already has a control kindergarten");
+        }
         Kindergarten kindergarten = from(newKindergarten, user);
         kindergartensRepository.save(kindergarten);
         return KindergartenDto.from(kindergarten);
