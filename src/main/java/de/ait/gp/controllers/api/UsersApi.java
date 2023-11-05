@@ -235,7 +235,7 @@ public interface UsersApi {
     @PreAuthorize("hasAnyAuthority('USER')")
     ChildDtoList addNewChildToUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                    @RequestBody @Valid NewChildDto newChildDto);
-    @Operation(summary = "Adding new Child to user", description = "Available to User")
+    @Operation(summary = "Updating Child's info in User", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "child has been added",

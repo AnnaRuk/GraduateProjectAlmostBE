@@ -14,6 +14,9 @@ import javax.validation.constraints.NotNull;
 @Builder
 @Schema(name = "UpdateKindergarten")
 public class UpdateKindergartenDto {
+    @NotNull
+    @Schema(description = "Kindergarten's identifier", example = "1")
+    private Long id;
     @NotBlank
     @NotEmpty
     @Schema(name = "title", description = "title of Kindergarten", example = "Title")

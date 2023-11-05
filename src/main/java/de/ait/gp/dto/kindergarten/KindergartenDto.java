@@ -65,7 +65,7 @@ public class KindergartenDto {
                 .phone(kindergarten.getManager()!=null ? kindergarten.getManager().getPhone() : null)
                 .build();
     }
-    public static List<KindergartenDto> from(List<Kindergarten> kindergartens) {
+    public static List<KindergartenDto>     from(List<Kindergarten> kindergartens) {
         return kindergartens.stream()
                 .map(KindergartenDto::from)
                 .toList();

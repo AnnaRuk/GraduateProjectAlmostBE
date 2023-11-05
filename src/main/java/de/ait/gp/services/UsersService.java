@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -204,11 +205,15 @@ public class UsersService {
         if (!user.getFavorites().add(kindergarten)) {
             throw new RestException(HttpStatus.CONFLICT, "This kindergarten has already been added to the user");
         }
-
+        favorites.add(kindergarten);
         user.setFavorites(favorites);
         usersRepository.save(user);
         return KindergartenDtoList.builder()
-                .kindergartens(KindergartenDto.from(favorites.stream().toList()))
+                .kindergartens(KindergartenDto.from(
+                        favorites.stream()
+                                .sorted(Comparator.comparing(Kindergarten::getId))
+                                .toList()
+                ))
                 .build();
     }
 
@@ -265,7 +270,7 @@ public class UsersService {
         Child updateChild = childrenRepository.findByParentAndId(user, updateChildDto.getId())
                 .orElseThrow(() ->
                         new RestException(HttpStatus.NOT_FOUND,
-                                "Child with id<" + updateChildDto.getId() + " of user with id <" + userId + "> not found"))
+                                "Child with id<" + updateChildDto.getId() + "> of user with id <" + userId + "> not found"))
                 .updateFrom(updateChildDto);
 
 
