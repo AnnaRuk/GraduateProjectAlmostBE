@@ -278,7 +278,8 @@ public class UsersService {
                     updateChild.getLastName(),
                     updateChild.getDateOfBirth()).orElseThrow();
 
-            if (child.getParent().getId().intValue() != updateChild.getParent().getId().intValue()) {
+            if (child.getParent().getId().intValue() != updateChild.getParent().getId().intValue() ||
+                    child.getId().intValue() != updateChild.getId().intValue()) {
                 throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists ");
             }
         }
