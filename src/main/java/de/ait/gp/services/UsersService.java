@@ -262,18 +262,23 @@ public class UsersService {
 
     public ChildDto updateChildInUser(Long userId, UpdateChildDto updateChildDto) {
         User user = getUserOrThrow(userId);
-        Child updateChild = getChildOrThrow(updateChildDto.getId()).updateFrom(updateChildDto);
+        Child updateChild = childrenRepository.findByParentAndId(user, updateChildDto.getId())
+                .orElseThrow(() ->
+                        new RestException(HttpStatus.NOT_FOUND,
+                                "Child with id<" + updateChildDto.getId() + " of user with id <" + userId + "> not found"))
+                .updateFrom(updateChildDto);
+
+
         if (childrenRepository.existsByFirstNameAndLastNameAndDateOfBirth(
                 updateChild.getFirstName(),
                 updateChild.getLastName(),
                 updateChild.getDateOfBirth()
         )) {
-            Child child = childrenRepository.findByParentAndId(user, updateChildDto.getId())
-                    .orElseThrow(() ->
-                            new RestException(HttpStatus.NOT_FOUND,
-                                    "Child with id<" + updateChildDto.getId() + " of user with id <" + userId + "> not found"));
+            Child child = childrenRepository.findFirstByFirstNameAndLastNameAndDateOfBirth(updateChild.getFirstName(),
+                    updateChild.getLastName(),
+                    updateChild.getDateOfBirth()).orElseThrow();
 
-            if (child.getId().intValue() != updateChild.getId().intValue()) {
+            if (child.getParent().getId().intValue() != updateChild.getParent().getId().intValue()) {
                 throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists ");
             }
         }

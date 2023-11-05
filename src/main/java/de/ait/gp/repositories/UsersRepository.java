@@ -14,7 +14,5 @@ public interface UsersRepository extends JpaRepository<User, Long> {
 
     Optional<User> findFirstByCodesContainsOrderById(ConfirmationCode code);
 
-    Optional<User> findFirstUserByControlKindergartenContains(Kindergarten controlKindergarten);
-
 
 }
