@@ -1,10 +1,10 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.RequestStatus;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -18,16 +18,13 @@ import java.util.Objects;
 @AllArgsConstructor
 public class Request {
 
-    public enum Status {
-        NOT_CONFIRMED, CONFIRMED, DELETED, REJECTED
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Enumerated(value = EnumType.STRING)
-    private Status status;
+    private RequestStatus status;
 
     @ManyToOne
     @JoinColumn(name = "child_id", nullable = false)
@@ -54,5 +51,12 @@ public class Request {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+    public static Request from(Child child, Kindergarten kindergarten) {
+        return  Request.builder()
+                .child(child)
+                .kindergarten(kindergarten)
+                .requestDateTime(LocalDateTime.now())
+                .build();
     }
 }

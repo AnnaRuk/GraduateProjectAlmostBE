@@ -17,11 +17,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "Child")
+@Schema(name = "Child", description = "child's data")
 
 public class ChildDto {
     @NotNull
-    @Schema(description = "user's identifier", example = "1")
+    @Schema(description = "child's identifier", example = "1")
     private Long id;
 
     @NotBlank

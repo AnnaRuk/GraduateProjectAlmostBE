@@ -19,6 +19,9 @@ import java.util.List;
 public class KindergartenDto {
     @Schema(description = "kindergarten's identifier", example = "1")
     private Long id;
+    @NotNull
+    @Schema(description = "kindergarten's manager Id", example = "1")
+    private Long managerId;
     @NotBlank
     @NotEmpty
     @Schema(name = "title", description = "title of Kindergarten", example = "Title")
@@ -55,6 +58,7 @@ public class KindergartenDto {
     public static KindergartenDto from(Kindergarten kindergarten) {
         return KindergartenDto.builder()
                 .id(kindergarten.getId())
+                .managerId(kindergarten.getManager()!=null ?kindergarten.getManager().getId() : null)
                 .title(kindergarten.getTitle())
                 .city(kindergarten.getCity())
                 .postcode(kindergarten.getPostcode())

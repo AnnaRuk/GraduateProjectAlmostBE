@@ -176,7 +176,7 @@ public interface UsersApi {
     KindergartenDtoList addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 
-    @Operation(summary = "Delete kindergarten from User's favorites", description = "Available to User")
+    @Operation(summary = "Remove kindergarten from User's favorites", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "kindergarten was deleted",
