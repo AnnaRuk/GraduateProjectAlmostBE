@@ -46,13 +46,13 @@ public class UserDto {
 
     @Schema(name = "postCode", description = "user's postcode", example = "46446")
     private String postCode;
-    @Schema(name = "address", description = "user's address", example = "Berlinstr. 8")
+    @Schema(name = "address", description = "user's address", example = "Berlin str. 8")
     private String address;
     @Schema(name = "city", description = "user's city", example = "Berlin")
     private String city;
     @Schema(name = "phone", description = "user's phone", example = "+495451619")
     private String phone;
-    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "05.03.1990")
+    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "1990-05-03")
     private String dateOfBirth;
 
     @Enumerated(value = EnumType.STRING)

@@ -8,8 +8,9 @@ import lombok.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.List;
+
+import static de.ait.gp.dto.Gender.NOT_SELECTED;
 
 @Getter
 @Setter
@@ -37,8 +38,7 @@ public class ChildDto {
     @Schema(name = "gender", description = "child's gender", example = "MALE")
     private String gender;
 
-    @Pattern(regexp = "^(\\d{2}\\.\\d{2}\\.\\d{4}( \\d{2}:\\d{2}:\\d{2}:\\d{1})?)$")
-    @Schema(name = "dateOfBirth", description = "child's date of birth", example = "05.03.1990")
+    @Schema(name = "dateOfBirth", description = "child's date of birth", example = "1990-03-05")
     private String dateOfBirth;
 
     public static ChildDto from(Child child) {
@@ -47,7 +47,7 @@ public class ChildDto {
                 .firstName(child.getFirstName())
                 .lastName(child.getLastName())
                 .dateOfBirth(child.getDateOfBirth()!=null ? child.getDateOfBirth().format(TimeDateFormatter.DATE_FORMAT): null)
-                .gender(child.getGender().toString())
+                .gender(child.getGender()!=null ? child.getGender().toString() : NOT_SELECTED.toString())
                 .build();
     }
     public static List<ChildDto> from(List<Child> childList) {

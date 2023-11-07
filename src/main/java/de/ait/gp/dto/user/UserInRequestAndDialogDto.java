@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Builder
 @Schema(name = "UserInRequest", description = "User in request data")
-public class UserInRequestDto {
+public class UserInRequestAndDialogDto {
     @NotNull
     @Schema(description = "user's identifier", example = "1")
     private Long id;
@@ -28,8 +28,8 @@ public class UserInRequestDto {
     @Schema(name = "lastName", description = "user's lastname", example = "Sedakov")
     private String lastName;
 
-    public static UserInRequestDto from(User user) {
-        return UserInRequestDto.builder()
+    public static UserInRequestAndDialogDto from(User user) {
+        return UserInRequestAndDialogDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

@@ -2,10 +2,12 @@ package de.ait.gp.controllers;
 
 import de.ait.gp.controllers.api.UsersApi;
 import de.ait.gp.dto.child.ChildDto;
-import de.ait.gp.dto.child.ChildDtoList;
+import de.ait.gp.dto.child.ChildListDto;
 import de.ait.gp.dto.child.NewChildDto;
 import de.ait.gp.dto.child.UpdateChildDto;
 import de.ait.gp.dto.kindergarten.*;
+import de.ait.gp.dto.request.NewRequestDto;
+import de.ait.gp.dto.request.RequestListWithChildrenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
@@ -21,12 +23,12 @@ public class UserControllers implements UsersApi {
     private final UsersService usersService;
 
     @Override
-    public UserDto register(NewUserDto newUser){
+    public UserDto register(NewUserDto newUser) {
         return usersService.register(newUser);
     }
 
     @Override
-    public UserDto getProfile(AuthenticatedUser user){
+    public UserDto getProfile(AuthenticatedUser user) {
         Long currentId = user.getId();
         return usersService.getProfile(currentId);
     }
@@ -57,22 +59,22 @@ public class UserControllers implements UsersApi {
     }
 
     @Override
-    public KindergartenDtoList getFavoriteKindergartens(AuthenticatedUser user) {
+    public KindergartenListDto getFavoriteKindergartens(AuthenticatedUser user) {
         return usersService.getAllFavoriteKindergartens(user.getId());
     }
 
     @Override
-    public KindergartenDtoList addKindergartenToFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenToFavoriteDto) {
+    public KindergartenListDto addKindergartenToFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenToFavoriteDto) {
         return usersService.addKindergartenToFavorites(user.getId(), kindergartenToFavoriteDto.getKindergartenId());
     }
 
     @Override
-    public ChildDtoList getAllChildren(AuthenticatedUser user) {
+    public ChildListDto getAllChildren(AuthenticatedUser user) {
         return usersService.getAllChildren(user.getId());
     }
 
     @Override
-    public ChildDtoList addNewChildToUser(AuthenticatedUser user, NewChildDto newChildDto) {
+    public ChildListDto addNewChildToUser(AuthenticatedUser user, NewChildDto newChildDto) {
         return usersService.addNewChildToUser(user.getId(), newChildDto);
     }
 
@@ -83,6 +85,26 @@ public class UserControllers implements UsersApi {
 
     @Override
     public KindergartenDto removeKindergartenFromFavorites(AuthenticatedUser user, KindergartenToFavoriteDto kindergartenFromFavorite) {
-        return usersService.removeKindergartenFromFavorites(user.getId(),kindergartenFromFavorite.getKindergartenId());
+        return usersService.removeKindergartenFromFavorites(user.getId(), kindergartenFromFavorite.getKindergartenId());
+    }
+
+    @Override
+    public RequestListWithChildrenDto getAllRequests(AuthenticatedUser user) {
+        return usersService.getAllRequests(user.getId());
+    }
+
+    @Override
+    public RequestListWithChildrenDto addNewRequest(AuthenticatedUser user, NewRequestDto newRequest) {
+        return usersService.addNewRequest(user.getId(), newRequest);
+    }
+
+    @Override
+    public RequestListWithChildrenDto rejectRequestBuId(AuthenticatedUser user, Long requestId) {
+        return usersService.rejectRequestById(user.getId(), requestId);
+    }
+
+    @Override
+    public RequestListWithChildrenDto confirmRequestBuId(AuthenticatedUser user, Long requestId) {
+        return usersService.confirmRequestById(user.getId(), requestId);
     }
 }

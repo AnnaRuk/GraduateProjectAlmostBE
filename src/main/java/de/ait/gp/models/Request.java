@@ -57,6 +57,7 @@ public class Request {
                 .child(child)
                 .kindergarten(kindergarten)
                 .requestDateTime(LocalDateTime.now())
+                .status(RequestStatus.NOT_CONFIRMED)
                 .build();
     }
 }

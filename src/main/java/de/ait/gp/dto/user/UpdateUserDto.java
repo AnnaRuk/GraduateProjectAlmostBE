@@ -25,8 +25,8 @@ public class UpdateUserDto {
     private String lastName;
 
     @NotNull
-    @Pattern(regexp = "^(\\d{2}\\.\\d{2}\\.\\d{4}( \\d{2}:\\d{2}:\\d{2}:\\d{1})?)$")
-    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "05.03.1990")
+    @Pattern(regexp = "^(?:19|20)\\d\\d-(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2\\d|3[0-1])$")
+    @Schema(name = "dateOfBirth", description = "user's date of birth", example = "1990-05-03")
     private String dateOfBirth;
 
     @Email
@@ -41,7 +41,7 @@ public class UpdateUserDto {
 
     @NotEmpty
     @NotBlank
-    @Schema(name = "address", description = "user's address", example = "Berlinstr. 8")
+    @Schema(name = "address", description = "user's address", example = "Berlin str. 8")
     private String address;
 
     @NotEmpty

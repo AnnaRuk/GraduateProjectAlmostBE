@@ -30,7 +30,7 @@ public class NewChildDto {
     @Schema(name = "gender", description = "child's gender", example = "MALE")
     private String gender;
     @NotNull
-    @Pattern(regexp = "^(\\d{2}\\.\\d{2}\\.\\d{4}( \\d{2}:\\d{2}:\\d{2}:\\d{1})?)$")
-    @Schema(name = "dateOfBirth", description = "child's date of birth", example = "05.03.1990")
+    @Pattern(regexp = "^(?:19|20)\\d\\d-(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2\\d|3[0-1])$")
+    @Schema(name = "dateOfBirth", description = "child's date of birth", example = "1990-05-11")
     private String dateOfBirth;
 }

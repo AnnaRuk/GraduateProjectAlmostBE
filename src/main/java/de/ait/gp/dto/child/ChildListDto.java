@@ -12,8 +12,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "ChildLList")
-public class ChildDtoList {
+@Schema(name = "ChildList")
+public class ChildListDto {
     @NotNull
     @Schema(name = "children", description = "list of children")
     List<ChildDto> children;

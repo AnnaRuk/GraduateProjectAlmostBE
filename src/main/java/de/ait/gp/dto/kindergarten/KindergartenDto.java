@@ -19,7 +19,6 @@ import java.util.List;
 public class KindergartenDto {
     @Schema(description = "kindergarten's identifier", example = "1")
     private Long id;
-    @NotNull
     @Schema(description = "kindergarten's manager Id", example = "1")
     private Long managerId;
     @NotBlank

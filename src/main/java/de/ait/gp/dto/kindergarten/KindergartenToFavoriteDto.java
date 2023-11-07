@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "KindergartenToFavorite")
+@Schema(name = "KindergartenToFavorite", description = "Kindergarten's Id to add in favorites")
 public class KindergartenToFavoriteDto {
     private Long kindergartenId;
 }

@@ -1,9 +1,11 @@
 package de.ait.gp.utils;
 
 import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.RequestStatus;
 import de.ait.gp.dto.Role;
 
 import static de.ait.gp.dto.Gender.*;
+import static de.ait.gp.dto.RequestStatus.*;
 import static de.ait.gp.dto.Role.*;
 
 public class UserUtils {
@@ -24,6 +26,13 @@ public class UserUtils {
         if (role!=null) {
             return role.equals(ADMIN.toString()) ? ADMIN :
                     role.equals(MANAGER.toString()) ? MANAGER : USER;
+        }
+        return null;
+    }
+    public static RequestStatus getEnumRequestStatus(String status) {
+        if (status!=null) {
+            return status.equals(CONFIRMED.toString()) ? CONFIRMED :
+                    status.equals(NOT_CONFIRMED.toString()) ? NOT_CONFIRMED :REJECTED;
         }
         return null;
     }

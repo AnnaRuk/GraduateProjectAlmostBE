@@ -15,10 +15,10 @@ import java.util.List;
 @Schema(name = "KindergartensWithCities")
 public class KindergartensWithCitiesDto {
     @NotNull
-    @Schema(name = "cities", description = "all cities of kindergartens")
+    @Schema(name = "cities", description = "List of cities of kindergartens")
     private List<String> cities;
     @NotNull
-    @Schema(name = "kindergartens", description = "all kindergartens")
+    @Schema(name = "KindergartenList", description = "List of kindergartens")
     private List<KindergartenDto> KindergartenDTOList;
 
 }

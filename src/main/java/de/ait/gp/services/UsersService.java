@@ -1,27 +1,21 @@
 package de.ait.gp.services;
 
-import de.ait.gp.dto.child.ChildDto;
-import de.ait.gp.dto.child.ChildDtoList;
-import de.ait.gp.dto.child.NewChildDto;
-import de.ait.gp.dto.child.UpdateChildDto;
+import de.ait.gp.dto.child.*;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
-import de.ait.gp.dto.kindergarten.KindergartenDtoList;
+import de.ait.gp.dto.kindergarten.KindergartenListDto;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
 import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
+import de.ait.gp.dto.request.NewRequestDto;
+import de.ait.gp.dto.request.RequestDto;
+import de.ait.gp.dto.request.RequestListWithChildrenDto;
 import de.ait.gp.dto.user.NewUserDto;
 import de.ait.gp.dto.user.UpdateUserDto;
 import de.ait.gp.dto.user.UserDto;
 import de.ait.gp.exceptions.RestException;
 import de.ait.gp.mail.ConfirmMailSender;
 import de.ait.gp.mail.MailTemplatesUtil;
-import de.ait.gp.models.Child;
-import de.ait.gp.models.ConfirmationCode;
-import de.ait.gp.models.Kindergarten;
-import de.ait.gp.models.User;
-import de.ait.gp.repositories.ChildrenRepository;
-import de.ait.gp.repositories.ConfirmationCodeRepository;
-import de.ait.gp.repositories.KindergartensRepository;
-import de.ait.gp.repositories.UsersRepository;
+import de.ait.gp.models.*;
+import de.ait.gp.repositories.*;
 import de.ait.gp.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,11 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
+import static de.ait.gp.dto.RequestStatus.CONFIRMED;
+import static de.ait.gp.dto.RequestStatus.REJECTED;
+import static de.ait.gp.dto.Role.MANAGER;
+import static de.ait.gp.dto.Role.USER;
 import static de.ait.gp.dto.kindergarten.KindergartenDto.from;
 import static de.ait.gp.models.Kindergarten.from;
 
@@ -47,6 +42,7 @@ public class UsersService {
 
     private final UsersRepository usersRepository;
     private final ChildrenRepository childrenRepository;
+    private final RequestsRepository requestsRepository;
     private final PasswordEncoder passwordEncoder;
     private final KindergartensRepository kindergartensRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
@@ -126,7 +122,7 @@ public class UsersService {
         User user = getUserOrThrow(userId);
 
         if (!user.getControlKindergarten().isEmpty()) {
-            throw new RestException(HttpStatus.CONFLICT, "Manager with id<" + userId+"> already has a control kindergarten");
+            throw new RestException(HttpStatus.CONFLICT, "Manager with id<" + userId + "> already has a control kindergarten");
         }
         Kindergarten kindergarten = from(newKindergarten, user);
         kindergartensRepository.save(kindergarten);
@@ -185,7 +181,7 @@ public class UsersService {
         return KindergartenDto.from(kindergarten);
     }
 
-    public KindergartenDtoList getAllFavoriteKindergartens(Long userId) {
+    public KindergartenListDto getAllFavoriteKindergartens(Long userId) {
 
         User user = getUserOrThrow(userId);
 
@@ -193,13 +189,13 @@ public class UsersService {
                 .stream()
                 .toList();
 
-        return KindergartenDtoList.builder()
+        return KindergartenListDto.builder()
                 .kindergartens(from(kindergartens))
                 .build();
 
     }
 
-    public KindergartenDtoList addKindergartenToFavorites(Long userId, Long kindergartenId) {
+    public KindergartenListDto addKindergartenToFavorites(Long userId, Long kindergartenId) {
 
         User user = getUserOrThrow(userId);
 
@@ -212,7 +208,7 @@ public class UsersService {
         favorites.add(kindergarten);
         user.setFavorites(favorites);
         usersRepository.save(user);
-        return KindergartenDtoList.builder()
+        return KindergartenListDto.builder()
                 .kindergartens(KindergartenDto.from(
                         favorites.stream()
                                 .sorted(Comparator.comparing(Kindergarten::getId))
@@ -243,14 +239,14 @@ public class UsersService {
         return from(kindergarten);
     }
 
-    public ChildDtoList getAllChildren(Long userId) {
+    public ChildListDto getAllChildren(Long userId) {
         User user = getUserOrThrow(userId);
-        return ChildDtoList.builder()
+        return ChildListDto.builder()
                 .children(ChildDto.from(childrenRepository.findAllByParentOrderById(user).stream().toList()))
                 .build();
     }
 
-    public ChildDtoList addNewChildToUser(Long userId, NewChildDto newChildDto) {
+    public ChildListDto addNewChildToUser(Long userId, NewChildDto newChildDto) {
         User user = getUserOrThrow(userId);
         Child newChild = Child.from(user, newChildDto);
         if (childrenRepository.existsByFirstNameAndLastNameAndDateOfBirth(
@@ -264,7 +260,7 @@ public class UsersService {
             throw new RestException(HttpStatus.CONFLICT, "Child with this data already exists in children of User with id<" + userId + ">");
         }
         childrenRepository.save(newChild);
-        return ChildDtoList.builder()
+        return ChildListDto.builder()
                 .children(ChildDto.from(childrenRepository.findAllByParentOrderById(user).stream().toList()))
                 .build();
     }
@@ -300,4 +296,102 @@ public class UsersService {
         return childrenRepository.findById(childId)
                 .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Child with id<" + childId + "> not found"));
     }
+
+    public RequestListWithChildrenDto getAllRequests(Long userId) {
+        User user = getUserOrThrow(userId);
+        List<Request> activeRequests = new ArrayList<>();
+        List<Child> childrenWithActiveRequests = new ArrayList<>();
+
+        if (user.getRole().equals(MANAGER)) {
+            Kindergarten controlKindergarten = findKindergartenByManagerIdOrThrow(userId);
+
+            childrenWithActiveRequests = childrenRepository
+                    .findChildrenWithActiveRequestsManager(controlKindergarten.getId(), REJECTED.toString());
+
+            activeRequests = requestsRepository.findAllByKindergartenAndStatusIsNotOrderByRequestDateTimeAsc(
+                    controlKindergarten, REJECTED);
+
+        } else if (user.getRole().equals(USER)) {
+            Set<Child> childrenOfUser = childrenRepository.findAllByParentOrderById(user);
+            activeRequests = requestsRepository
+                    .findAllByChildIsInAndStatusIsNotOrderByRequestDateTimeAsc(childrenOfUser, REJECTED);
+            childrenWithActiveRequests = childrenRepository
+                    .findChildrenWithActiveRequestsUser(userId, REJECTED.toString());
+
+        }
+
+        return RequestListWithChildrenDto.builder()
+                .requests(RequestDto.from(activeRequests))
+                .childrenWithUser(ChildWithUserDto.from(childrenWithActiveRequests))
+                .build();
+
+    }
+
+    public Kindergarten findKindergartenByManagerIdOrThrow(Long managerId) {
+        return kindergartensRepository.findKindergartenByManager_Id(managerId)
+                .orElseThrow(() ->
+                        new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id<" + managerId + ">  not found"));
+    }
+
+    public Request getRequestOrThrow(Long requestId) {
+        return requestsRepository.findById(requestId).orElseThrow(() ->
+                new RestException((HttpStatus.NOT_FOUND), "Request with id <" + requestId + "> not found"));
+
+    }
+
+    public RequestListWithChildrenDto addNewRequest(Long userId, NewRequestDto newRequest) {
+        if (requestsRepository.findFirstByChild_IdAndKindergarten_IdAndStatusIsNot(
+                newRequest.getChildId(),
+                newRequest.getKindergartenId(),
+                REJECTED) != null) {
+            throw new RestException(HttpStatus.CONFLICT, "Request with this data already exists");
+        }
+        Child child = getChildOrThrow(newRequest.getChildId());
+        Kindergarten kindergarten = getKindergartenOrThrow(newRequest.getKindergartenId());
+        if (!userId.equals(child.getParent().getId())) {
+            throw new RestException(
+                    HttpStatus.NOT_FOUND, "Child with id <" + child.getId() + "> not found in children of user with id <" + userId + ">");
+        }
+        requestsRepository.save(Request.from(child, kindergarten));
+        return getAllRequests(userId);
+
+    }
+
+    public RequestListWithChildrenDto rejectRequestById(Long userId, Long requestId) {
+        User user = getUserOrThrow(userId);
+        Request request = getRequestOrThrow(requestId);
+        if (request.getStatus().equals(REJECTED)) {
+            throw new RestException(HttpStatus.BAD_REQUEST, "Request is already rejected");
+        }
+        if (user.getRole().equals(MANAGER)) {
+            if (!kindergartensRepository.findFirstByManager(user).getId().equals(request.getKindergarten().getId())) {
+                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for manager with id<" + userId + ">");
+            }
+        } else if (user.getRole().equals(USER)) {
+            if (!user.getChildren().contains(request.getChild())) {
+                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for user with id<" + userId + ">");
+            }
+        }
+        request.setStatus(REJECTED);
+        requestsRepository.save(request);
+        return getAllRequests(userId);
+    }
+
+    public RequestListWithChildrenDto confirmRequestById(Long userId, Long requestId) {
+        User user = getUserOrThrow(userId);
+        Request request = getRequestOrThrow(requestId);
+        if (request.getStatus().equals(REJECTED)) {
+            throw new RestException(HttpStatus.BAD_REQUEST, "Request is already rejected");
+        }
+        if (user.getRole().equals(MANAGER)) {
+            if (!kindergartensRepository.findFirstByManager(user).getId().equals(request.getKindergarten().getId())) {
+                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for manager with id<" + userId + ">");
+            }
+        }
+
+        request.setStatus(CONFIRMED);
+        requestsRepository.save(request);
+        return getAllRequests(userId);
+    }
 }
+
