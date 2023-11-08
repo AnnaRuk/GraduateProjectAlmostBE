@@ -19,8 +19,8 @@ public interface ChildrenRepository extends JpaRepository<Child, Long> {
     Optional<Child> findFirstByFirstNameAndLastNameAndDateOfBirth(String firstName, String lastName, LocalDate dateOfBirth);
 
     Optional<Child> findByParentAndId(User user, Long childId);
-    @Query(nativeQuery = true, value = "select distinct child.* from Child child join Request  r on child.id = r.child_id where not r.status = :request_status and r.kindergarten_id = :kindergartenId")
-    List<Child> findChildrenWithActiveRequestsManager(@Param("kindergartenId") Long kindergartenId, @Param("request_status") String status);
-    @Query(value = "select distinct child.* from Child child join request r on child.id = r.child_id where not r.status = :request_status and child.parent_id = :parentId", nativeQuery = true)
-    List<Child> findChildrenWithActiveRequestsUser(@Param("parentId") Long parentId, @Param("request_status") String status);
+    @Query(nativeQuery = true, value = "select distinct child.* from Child child join Request  r on child.id = r.child_id where  r.kindergarten_id = :kindergartenId")
+    List<Child> findChildrenWithRequestsManager(@Param("kindergartenId") Long kindergartenId);
+    @Query(value = "select distinct child.* from Child child join request r on child.id = r.child_id where  child.parent_id = :parentId", nativeQuery = true)
+    List<Child> findChildrenWithRequestsUser(@Param("parentId") Long parentId);
 }

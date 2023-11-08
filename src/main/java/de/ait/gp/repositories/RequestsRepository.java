@@ -13,7 +13,7 @@ import java.util.Set;
 
 
 public interface RequestsRepository extends JpaRepository<Request, Long> {
-    List<Request> findAllByKindergartenAndStatusIsNotOrderByRequestDateTimeAsc(Kindergarten kindergarten, RequestStatus status);
-    List<Request> findAllByChildIsInAndStatusIsNotOrderByRequestDateTimeAsc(Set<Child> children, RequestStatus status);
+    List<Request> findAllByKindergartenOrderByRequestDateTimeAsc(Kindergarten kindergarten);
+    List<Request> findAllByChildIsInOrderByRequestDateTimeAsc(Set<Child> children);
     Request findFirstByChild_IdAndKindergarten_IdAndStatusIsNot(Long childId, Long kindergartenId, RequestStatus status);
 }

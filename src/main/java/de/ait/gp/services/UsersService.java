@@ -300,29 +300,28 @@ public class UsersService {
     public RequestListWithChildrenDto getAllRequests(Long userId) {
         User user = getUserOrThrow(userId);
         List<Request> activeRequests = new ArrayList<>();
-        List<Child> childrenWithActiveRequests = new ArrayList<>();
+        List<Child> childrenWithRequests = new ArrayList<>();
 
         if (user.getRole().equals(MANAGER)) {
             Kindergarten controlKindergarten = findKindergartenByManagerIdOrThrow(userId);
 
-            childrenWithActiveRequests = childrenRepository
-                    .findChildrenWithActiveRequestsManager(controlKindergarten.getId(), REJECTED.toString());
+            childrenWithRequests = childrenRepository
+                    .findChildrenWithRequestsManager(controlKindergarten.getId());
 
-            activeRequests = requestsRepository.findAllByKindergartenAndStatusIsNotOrderByRequestDateTimeAsc(
-                    controlKindergarten, REJECTED);
+            activeRequests = requestsRepository.findAllByKindergartenOrderByRequestDateTimeAsc(controlKindergarten);
 
         } else if (user.getRole().equals(USER)) {
             Set<Child> childrenOfUser = childrenRepository.findAllByParentOrderById(user);
-            activeRequests = requestsRepository
-                    .findAllByChildIsInAndStatusIsNotOrderByRequestDateTimeAsc(childrenOfUser, REJECTED);
-            childrenWithActiveRequests = childrenRepository
-                    .findChildrenWithActiveRequestsUser(userId, REJECTED.toString());
+
+            activeRequests = requestsRepository.findAllByChildIsInOrderByRequestDateTimeAsc(childrenOfUser);
+            childrenWithRequests = childrenRepository
+                    .findChildrenWithRequestsUser(userId);
 
         }
 
         return RequestListWithChildrenDto.builder()
                 .requests(RequestDto.from(activeRequests))
-                .childrenWithUser(ChildWithUserDto.from(childrenWithActiveRequests))
+                .childrenWithUser(ChildWithUserDto.from(childrenWithRequests))
                 .build();
 
     }
