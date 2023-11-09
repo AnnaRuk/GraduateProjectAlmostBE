@@ -189,6 +189,11 @@ public class UsersService {
                 .stream()
                 .toList();
 
+        if (kindergartens.isEmpty()){
+            throw new RestException(HttpStatus.NOT_FOUND, "Not found favorite kindergartens");
+        }
+
+
         return KindergartenListDto.builder()
                 .kindergartens(from(kindergartens))
                 .build();

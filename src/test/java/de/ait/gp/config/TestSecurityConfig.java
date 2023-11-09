@@ -1,6 +1,6 @@
 package de.ait.gp.config;
 
-
+import de.ait.gp.dto.Role;
 import de.ait.gp.models.User;
 import de.ait.gp.secutity.details.AuthenticatedUser;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -12,13 +12,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
+import java.time.LocalDate;
+
 @TestConfiguration
 @Profile("test")
 public class TestSecurityConfig {
 
-    public static final String MOCK_USER = "anna@gmail.com";
+    public static final String USER = "user";
 
-    public static final String MOCK_ADMIN = "admin";
+    public static final String MANAGER = "admin";
+    public static final String ANNA = "anna";
+
 
     @Bean
     @Primary
@@ -26,18 +30,53 @@ public class TestSecurityConfig {
         return new InMemoryUserDetailsManager() {
             @Override
             public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                if (username.equals(MOCK_USER)) {
+                if (username.equals(USER)) {
                     return new AuthenticatedUser(User.builder()
                             .id(1L)
-                            .email(MOCK_USER)
-                            .role(User.Role.USER)
+                            .email("sedakovsergey1@gmail.com")
+                            .role(Role.USER)
+                            .firstName("Sergey")
+                            .lastName("Sedakov")
+                            .address("Berlinstrasse7")
+                            .city("Berlin")
+                            .dateOfBirth(LocalDate.of(1998, 3, 8))
+                            .phone("+4912451219")
+                            .postcode("45129")
+                            .hashPassword("$2a$04$YFDmGcB9H317JRzplPdezOll9xdkNyJtfX.eU/dNGlT4.aHho63nW")
+                            .state(User.State.CONFIRMED)
                             .build());
-                } else if (username.equals(MOCK_ADMIN)) {
+                } else if (username.equals(MANAGER)) {
                     return new AuthenticatedUser(User.builder()
                             .id(1L)
-                            .email(MOCK_ADMIN)
-                            .role(User.Role.ADMIN)
+                            .email(MANAGER)
+                            .role(Role.MANAGER)
+                            .firstName("Ivan")
+                            .lastName("Petrov")
+                            .address("Essenstrasse15")
+                            .city("Essen")
+                            .dateOfBirth(LocalDate.of(1975, 5, 1))
+                            .phone("+4912354657")
+                            .postcode("12379")
+                            .hashPassword("$2a$04$YFDmGcB9H317JRzplPdezOll9xdkNyJtfX.eU/dNGlT4.aHho63nW")
+                            .state(User.State.CONFIRMED)
                             .build());
+
+                } else if (username.equals(ANNA)) {
+                    return new AuthenticatedUser(User.builder()
+                            .id(2L)
+                            .email("anna@gmail.com")
+                            .role(Role.USER)
+                            .firstName("Anna")
+                            .lastName("Bieliaieva")
+                            .address("Essenstrasse15")
+                            .city("Essen")
+                            .dateOfBirth(LocalDate.of(1985, 5, 1))
+                            .phone("+4912354657")
+                            .postcode("12379")
+                            .hashPassword("$2a$04$YFDmGcB9H317JRzplPdezOll9xdkNyJtfX.eU/dNGlT4.aHho63nW")
+                            .state(User.State.CONFIRMED)
+                            .build());
+
                 } else throw new UsernameNotFoundException("User not found");
             }
         };
