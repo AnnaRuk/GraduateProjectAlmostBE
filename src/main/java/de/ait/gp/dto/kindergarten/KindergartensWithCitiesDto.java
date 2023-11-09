@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-@Schema(name = "KindergartensWithCities")
+@Schema(name = "KindergartensWithCities", description = "List of kindergartens with list of cities")
 public class KindergartensWithCitiesDto {
     @NotNull
     @Schema(name = "cities", description = "List of cities of kindergartens")

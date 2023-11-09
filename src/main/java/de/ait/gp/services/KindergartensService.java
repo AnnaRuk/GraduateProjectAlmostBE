@@ -13,18 +13,14 @@ import java.util.List;
 
 import static de.ait.gp.dto.kindergarten.KindergartenDto.from;
 
-
 @Service
 @RequiredArgsConstructor
 public class KindergartensService {
 
     private final KindergartensRepository kindergartensRepository;
 
-
-
     public KindergartensWithCitiesDto getAllKindergartensWithCities() {
-        List<Kindergarten> kindergartenList = kindergartensRepository.findAllByOrderByIdAsc()
-;
+        List<Kindergarten> kindergartenList = kindergartensRepository.findAllByOrderByIdAsc();
         List<KindergartenDto> kindergartenDtoList = from(kindergartenList);
         List<String> cities = kindergartensRepository.findAllCitiesOrderByCityAsc();
 
@@ -33,7 +29,6 @@ public class KindergartensService {
                 .cities(cities)
                 .build();
     }
-
 
     public KindergartenDto findKindergarten(Long KindergartenId) {
 

@@ -1,11 +1,9 @@
 package de.ait.gp.models;
 
 import lombok.*;
-import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -14,6 +12,7 @@ import java.util.Objects;
 @Builder
 @Entity
 @AllArgsConstructor
+@Table(name = "confirmation_code")
 public class ConfirmationCode {
 
     @Id

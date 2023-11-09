@@ -11,7 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Set;
 
-
 public interface RequestsRepository extends JpaRepository<Request, Long> {
     List<Request> findAllByKindergartenOrderByRequestDateTimeAsc(Kindergarten kindergarten);
     List<Request> findAllByChildIsInOrderByRequestDateTimeAsc(Set<Child> children);

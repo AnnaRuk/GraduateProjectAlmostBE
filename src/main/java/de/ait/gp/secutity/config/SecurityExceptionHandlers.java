@@ -20,24 +20,22 @@ public class SecurityExceptionHandlers {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static final AuthenticationEntryPoint AUTHENTICATION_ENTRY_POINT = (request, response, authException) ->
-            fillResponse(response, HttpStatus.UNAUTHORIZED,"User unauthorized");
+            fillResponse(response, HttpStatus.UNAUTHORIZED, "User unauthorized");
 
     public static final AccessDeniedHandler ACCESS_DENIED_HANDLER = (request, response, accessDeniedException) -> {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        fillResponse(response,HttpStatus.FORBIDDEN,"Access denied for user with email <" +
+        fillResponse(response, HttpStatus.FORBIDDEN, "Access denied for user with email <" +
                 authentication.getName() + "> and role " + authentication.getAuthorities());
     };
 
     public static final AuthenticationSuccessHandler AUTHENTICATION_SUCCESS_HANDLER = (request, response, authentication) ->
-            fillResponse(response,HttpStatus.OK, "Login successful");
+            fillResponse(response, HttpStatus.OK, "Login successful");
 
     public static final AuthenticationFailureHandler AUTHENTICATION_FAILURE_HANDLER = (request, response, exception) ->
-            fillResponse(response,HttpStatus.UNAUTHORIZED, "Incorrect password or email");
+            fillResponse(response, HttpStatus.UNAUTHORIZED, "Incorrect password or email");
 
     public static final LogoutSuccessHandler LOGOUT_SUCCESS_HANDLER = (request, response, authentication) ->
-            fillResponse(response,HttpStatus.OK,"Logout successful");
-
-
+            fillResponse(response, HttpStatus.OK, "Logout successful");
 
 
     private static void fillResponse(HttpServletResponse response, HttpStatus status, String message) {

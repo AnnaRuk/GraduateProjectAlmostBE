@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "UserInRequest", description = "User in request data")
+@Schema(name = "UserInRequest", description = "User in request and dialogue data")
 public class UserInRequestAndDialogDto {
     @NotNull
     @Schema(description = "user's identifier", example = "1")

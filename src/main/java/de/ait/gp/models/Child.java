@@ -14,8 +14,6 @@ import java.util.Set;
 
 import static de.ait.gp.dto.Gender.NOT_SELECTED;
 import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
-
-
 @Getter
 @Setter
 @ToString
@@ -24,8 +22,6 @@ import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 @Entity
 @AllArgsConstructor
 public class Child {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

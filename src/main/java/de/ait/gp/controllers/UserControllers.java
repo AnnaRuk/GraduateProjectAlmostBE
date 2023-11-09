@@ -5,6 +5,8 @@ import de.ait.gp.dto.child.ChildDto;
 import de.ait.gp.dto.child.ChildListDto;
 import de.ait.gp.dto.child.NewChildDto;
 import de.ait.gp.dto.child.UpdateChildDto;
+import de.ait.gp.dto.dialogue.DialogueListDto;
+import de.ait.gp.dto.dialogue.message.NewMessageDto;
 import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.request.NewRequestDto;
 import de.ait.gp.dto.request.RequestListWithChildrenDto;
@@ -99,12 +101,22 @@ public class UserControllers implements UsersApi {
     }
 
     @Override
-    public RequestListWithChildrenDto rejectRequestBuId(AuthenticatedUser user, Long requestId) {
+    public RequestListWithChildrenDto rejectRequestById(AuthenticatedUser user, Long requestId) {
         return usersService.rejectRequestById(user.getId(), requestId);
     }
 
     @Override
-    public RequestListWithChildrenDto confirmRequestBuId(AuthenticatedUser user, Long requestId) {
+    public RequestListWithChildrenDto confirmRequestById(AuthenticatedUser user, Long requestId) {
         return usersService.confirmRequestById(user.getId(), requestId);
+    }
+
+    @Override
+    public DialogueListDto getAllDialogues(AuthenticatedUser user) {
+        return usersService.getAllDialogues(user.getId());
+    }
+
+    @Override
+    public DialogueListDto addNewMessage(AuthenticatedUser user, NewMessageDto newMessage) {
+        return usersService.addNewMessage(user.getId(), newMessage);
     }
 }

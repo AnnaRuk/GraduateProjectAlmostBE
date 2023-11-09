@@ -1,5 +1,6 @@
 package de.ait.gp.dto.kindergarten;
 
+import de.ait.gp.dto.user.UserInRequestAndDialogDto;
 import de.ait.gp.models.Kindergarten;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+
 
 @Getter
 @Setter
@@ -19,8 +21,8 @@ import java.util.List;
 public class KindergartenDto {
     @Schema(description = "kindergarten's identifier", example = "1")
     private Long id;
-    @Schema(description = "kindergarten's manager Id", example = "1")
-    private Long managerId;
+    @Schema(description = "kindergarten's manager data")
+    private UserInRequestAndDialogDto manager;
     @NotBlank
     @NotEmpty
     @Schema(name = "title", description = "title of Kindergarten", example = "Title")
@@ -57,7 +59,7 @@ public class KindergartenDto {
     public static KindergartenDto from(Kindergarten kindergarten) {
         return KindergartenDto.builder()
                 .id(kindergarten.getId())
-                .managerId(kindergarten.getManager()!=null ?kindergarten.getManager().getId() : null)
+                .manager(kindergarten.getManager()!=null ? UserInRequestAndDialogDto.from(kindergarten.getManager()) : null)
                 .title(kindergarten.getTitle())
                 .city(kindergarten.getCity())
                 .postcode(kindergarten.getPostcode())

@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "UpdateKindergarten")
+@Schema(name = "UpdateKindergarten", description = "Kindergarten's data to update")
 public class UpdateKindergartenDto {
     @NotNull
     @Schema(description = "Kindergarten's identifier", example = "1")

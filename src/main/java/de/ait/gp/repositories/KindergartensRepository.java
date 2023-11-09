@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-
 public interface KindergartensRepository extends JpaRepository<Kindergarten, Long> {
     @Query("select distinct k.city from Kindergarten k group by k.city order by k.city asc")
     List<String> findAllCitiesOrderByCityAsc();

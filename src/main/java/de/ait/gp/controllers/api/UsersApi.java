@@ -5,6 +5,8 @@ import de.ait.gp.dto.child.ChildDto;
 import de.ait.gp.dto.child.ChildListDto;
 import de.ait.gp.dto.child.NewChildDto;
 import de.ait.gp.dto.child.UpdateChildDto;
+import de.ait.gp.dto.dialogue.DialogueListDto;
+import de.ait.gp.dto.dialogue.message.NewMessageDto;
 import de.ait.gp.dto.kindergarten.*;
 import de.ait.gp.dto.StandardResponseDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
@@ -58,14 +60,35 @@ public interface UsersApi {
     UserDto register(@RequestBody @Valid NewUserDto newUser);
 
 
-
-    ///TODO documentation + test
+    @Operation(summary = "Getting user's profile info", description = "Available to user/manager")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
     @GetMapping("/profile")
     UserDto getProfile(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
-    ///TODO documentation + test
+    @Operation(summary = "Confirming user's profile by code", description = "Available to user/manager")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = UserDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
     @GetMapping("/confirm/{confirm-code}")
     UserDto confirm(@PathVariable("confirm-code") String code);
+
     @Operation(summary = "Adding new kindergarten to Manager", description = "Available to Manager")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201",
@@ -81,7 +104,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class))),
     })
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/profile/controlKindergarten")
     KindergartenDto addControlKindergartenToManager(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
@@ -89,16 +112,16 @@ public interface UsersApi {
 
     @Operation(summary = "Getting Kindergarten's info from user", description = "Available to manager")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200",
-                description = "Success",
-                content = @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = KindergartenDto.class))),
-        @ApiResponse(responseCode = "404",
-                description = "Not Found",
-                content = @Content(mediaType = "application/json",
-                        schema = @Schema(implementation = StandardResponseDto.class)))
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = KindergartenDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
     })
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @GetMapping("/profile/controlKindergarten")
     KindergartenDto getControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
@@ -118,9 +141,11 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class)))
 
     })
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
     @PutMapping("/profile")
     UserDto updateUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                        @RequestBody @Valid UpdateUserDto updateUserDto);
+
     @Operation(summary = "Updating control kindergarten's info", description = "Available to Manager")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "20o",
@@ -137,10 +162,10 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class))),
 
     })
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @PutMapping("/profile/controlKindergarten")
     KindergartenDto updateControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                                      @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);
+                                              @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);
 
     @Operation(summary = "Get all favorite kindergartens", description = "Available to User")
     @ApiResponses(value = {
@@ -153,8 +178,8 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-    @PreAuthorize("hasAnyAuthority('USER')")
-    @GetMapping ("/profile/favorites")
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/profile/favorites")
     KindergartenListDto getFavoriteKindergartens(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
     @Operation(summary = "Adding kindergarten to User's favorites", description = "Available to User")
@@ -174,7 +199,7 @@ public interface UsersApi {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/profile/favorites")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     KindergartenListDto addKindergartenToFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                    @RequestBody KindergartenToFavoriteDto kindergartenToFavoriteDto);
 
@@ -193,7 +218,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ValidationErrorsDto.class)))
     })
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @DeleteMapping("/profile/favorites")
     KindergartenDto removeKindergartenFromFavorites(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                                     @RequestBody KindergartenToFavoriteDto deleteKindergarten);
@@ -209,8 +234,8 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-    @PreAuthorize("hasAnyAuthority('USER')")
-    @GetMapping ("/profile/children")
+    @PreAuthorize("hasAuthority('USER')")
+    @GetMapping("/profile/children")
     ChildListDto getAllChildren(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
     @Operation(summary = "Adding new Child to user", description = "Available to User")
@@ -234,9 +259,10 @@ public interface UsersApi {
     })
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/profile/children")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     ChildListDto addNewChildToUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                    @RequestBody @Valid NewChildDto newChildDto);
+
     @Operation(summary = "Updating Child's info in User", description = "Available to User")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -258,11 +284,11 @@ public interface UsersApi {
     })
 
     @PutMapping("/profile/children")
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     ChildDto updateChildInUser(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                                    @RequestBody @Valid UpdateChildDto updateChildDto);
+                               @RequestBody @Valid UpdateChildDto updateChildDto);
 
-    @Operation(summary = "Getting List Of requests", description = "Available to everyone")
+    @Operation(summary = "Getting List of requests", description = "Available to everyone")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "Success",
@@ -273,6 +299,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
     @GetMapping("/profile/requests")
     RequestListWithChildrenDto getAllRequests(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
@@ -296,10 +323,10 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
     @ResponseStatus(HttpStatus.CREATED)
-    @PreAuthorize("hasAnyAuthority('USER')")
+    @PreAuthorize("hasAuthority('USER')")
     @PostMapping("/profile/requests")
     RequestListWithChildrenDto addNewRequest(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                                             @RequestBody NewRequestDto newRequest);
+                                             @RequestBody @Valid NewRequestDto newRequest);
 
     @Operation(summary = "Rejecting a request", description = "Available to everyone")
     @ApiResponses(value = {
@@ -316,10 +343,11 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
     @PutMapping("/profile/requests/{request_id}/reject")
-    RequestListWithChildrenDto rejectRequestBuId(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                               @PathVariable("request_id") Long requestId);
+    RequestListWithChildrenDto rejectRequestById(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                                 @PathVariable("request_id") Long requestId);
+
     @Operation(summary = "Confirming request", description = "Available to everyone")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
@@ -335,10 +363,50 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-    @PreAuthorize("hasAnyAuthority('MANAGER')")
+    @PreAuthorize("hasAuthority('MANAGER')")
     @PutMapping("/profile/requests/{request_id}/confirm")
-    RequestListWithChildrenDto confirmRequestBuId(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
-                                                 @PathVariable("request_id") Long requestId);
+    RequestListWithChildrenDto confirmRequestById(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                                  @PathVariable("request_id") Long requestId);
+
+    @Operation(summary = "Getting List of dialogues", description = "Available to everyone")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = DialogueListDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
+    @GetMapping("/profile/dialogues")
+    DialogueListDto getAllDialogues(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
+
+    @Operation(summary = "Adding a new message", description = "Available to everyone")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201",
+                    description = "message has been added",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = DialogueListDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Validation error",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ValidationErrorsDto.class))),
+            @ApiResponse(responseCode = "400",
+                    description = "Bad Request",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class))),
+            @ApiResponse(responseCode = "404",
+                    description = "Not Found",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = StandardResponseDto.class)))
+    })
+    @PreAuthorize("hasAnyAuthority('USER','MANAGER')")
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/profile/dialogues")
+    DialogueListDto addNewMessage(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
+                                  @RequestBody @Valid NewMessageDto newMessage);
 }
 
 

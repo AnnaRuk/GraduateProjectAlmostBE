@@ -7,8 +7,6 @@ import org.hibernate.proxy.HibernateProxy;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-
 @Getter
 @Setter
 @ToString
@@ -17,8 +15,6 @@ import java.util.Objects;
 @Entity
 @AllArgsConstructor
 public class Request {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -11,7 +11,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "UpdateUser")
+@Schema(name = "UpdateUser", description = "Users info to update")
 public class UpdateUserDto {
 
     @NotEmpty

@@ -23,11 +23,9 @@ import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 @Table(name = "account")
 @AllArgsConstructor
 public class User {
-
     public enum State {
        NOT_CONFIRMED, CONFIRMED, DELETED ,BANNED
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -58,10 +56,7 @@ public class User {
     private String address;
     private String postcode;
     private String city;
-
-
     private LocalDate dateOfBirth;
-
     private String phone;
 
     @OneToMany(mappedBy = "manager")
@@ -93,9 +88,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "dialogue_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "dialogue_id"} )
     )
+    @ToString.Exclude
     private Set<Dialogue> dialogues;
 
     @OneToMany(mappedBy = "sender")
+    @ToString.Exclude
     private Set<Message> messages;
 
 

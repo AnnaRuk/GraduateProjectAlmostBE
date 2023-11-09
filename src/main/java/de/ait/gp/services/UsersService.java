@@ -1,6 +1,9 @@
 package de.ait.gp.services;
 
 import de.ait.gp.dto.child.*;
+import de.ait.gp.dto.dialogue.DialogueDto;
+import de.ait.gp.dto.dialogue.DialogueListDto;
+import de.ait.gp.dto.dialogue.message.NewMessageDto;
 import de.ait.gp.dto.kindergarten.KindergartenDto;
 import de.ait.gp.dto.kindergarten.KindergartenListDto;
 import de.ait.gp.dto.kindergarten.NewKindergartenDto;
@@ -43,9 +46,11 @@ public class UsersService {
     private final UsersRepository usersRepository;
     private final ChildrenRepository childrenRepository;
     private final RequestsRepository requestsRepository;
-    private final PasswordEncoder passwordEncoder;
     private final KindergartensRepository kindergartensRepository;
     private final ConfirmationCodeRepository confirmationCodeRepository;
+    private final MessagesRepository messagesRepository;
+    private final DialoguesRepository dialoguesRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ConfirmMailSender confirmMailSender;
     private final MailTemplatesUtil mailTemplatesUtil;
 
@@ -83,9 +88,7 @@ public class UsersService {
 
         String link = baseUrl + "/confirm.html?id=" + valueCode;
 
-        String html = mailTemplatesUtil.createConfirmationMail(
-                user.getFirstName(), user.getLastName(), link
-        );
+        String html = mailTemplatesUtil.createConfirmationMail(user.getFirstName(), user.getLastName(), link);
 
         confirmMailSender.send(user.getEmail(), "Please confirm your registration with \"Kita Connection\"", html);
         return UserDto.from(user);
@@ -321,20 +324,21 @@ public class UsersService {
 
         return RequestListWithChildrenDto.builder()
                 .requests(RequestDto.from(activeRequests))
-                .childrenWithUser(ChildWithUserDto.from(childrenWithRequests))
+                .childWithUserList(ChildWithUserDto.from(childrenWithRequests))
                 .build();
 
     }
 
     public Kindergarten findKindergartenByManagerIdOrThrow(Long managerId) {
-        return kindergartensRepository.findKindergartenByManager_Id(managerId)
-                .orElseThrow(() ->
-                        new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id<" + managerId + ">  not found"));
+        return kindergartensRepository.findKindergartenByManager_Id(managerId).orElseThrow(
+                () -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id<" + managerId + ">  not found")
+        );
     }
 
     public Request getRequestOrThrow(Long requestId) {
-        return requestsRepository.findById(requestId).orElseThrow(() ->
-                new RestException((HttpStatus.NOT_FOUND), "Request with id <" + requestId + "> not found"));
+        return requestsRepository.findById(requestId).orElseThrow(
+                () -> new RestException((HttpStatus.NOT_FOUND), "Request with id <" + requestId + "> not found")
+        );
 
     }
 
@@ -390,7 +394,55 @@ public class UsersService {
 
         request.setStatus(CONFIRMED);
         requestsRepository.save(request);
+/*        RequestListWithChildrenDto  list = getAllRequests(userId);
+        return RequestListWithChildrenDto.builder()
+                .requests(list.getRequests())
+                .childWithUserList(list.getChildWithUserList())
+                .build();
+    }*/
         return getAllRequests(userId);
+    }
+
+    public DialogueListDto getAllDialogues(Long userId) {
+        User authUser = getUserOrThrow(userId);
+        List<Dialogue> dialogues = dialoguesRepository.findAllByMembersContains(authUser);
+        return DialogueListDto.builder()
+                .dialogues(DialogueDto.from(dialogues, userId))
+                .build();
+    }
+
+    @Transactional
+    public DialogueListDto addNewMessage(Long userId, NewMessageDto newMessage) {
+        if (userId.equals(newMessage.getRecipientId())) {
+            throw new RestException(HttpStatus.BAD_REQUEST, "Sorry, you can't send a message to yourself");
+        }
+        User sender = getUserOrThrow(userId);
+        User recipient = getUserOrThrow(newMessage.getRecipientId());
+        Set<User> members = new HashSet<>();
+        members.add(sender);
+        members.add(recipient);
+        Dialogue dialogue = dialoguesRepository.findDialogueByMembers(sender.getId(), recipient.getId());
+        Message message = Message.from(sender, newMessage);
+        if (dialogue == null) {
+            dialogue = Dialogue.builder()
+                    .members(members)
+                    .messages(new HashSet<>())
+                    .build();
+            dialogue = dialoguesRepository.save(dialogue);
+
+
+            recipient.getDialogues().add(dialogue);
+            usersRepository.save(recipient);
+
+            sender.getDialogues().add(dialogue);
+            usersRepository.save(sender);
+        }
+        dialogue = dialoguesRepository.findDialogueByMembers(sender.getId(), recipient.getId());
+        message.setDialogue(dialogue);
+        message = messagesRepository.save(message);
+        dialogue.getMessages().add(message);
+        dialoguesRepository.save(dialogue);
+        return getAllDialogues(userId);
     }
 }
 

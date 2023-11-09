@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "NewKindergarten")
+@Schema(name = "NewKindergarten", description = "New kindergarten's info")
 public class NewKindergartenDto {
     @NotBlank
     @NotEmpty
