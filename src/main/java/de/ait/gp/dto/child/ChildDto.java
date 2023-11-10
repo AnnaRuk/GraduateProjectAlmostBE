@@ -24,7 +24,6 @@ public class ChildDto {
     @NotNull
     @Schema(description = "child's identifier", example = "1")
     private Long id;
-
     @NotBlank
     @NotEmpty
     @Schema(name = "firstName", description = "child's firstname", example = "Sergey")

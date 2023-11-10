@@ -118,7 +118,7 @@ public class User {
         this.setEmail(updateUserDto.getEmail());
         this.setAddress(updateUserDto.getAddress());
         this.setGender(UserUtils.getEnumGender(updateUserDto.getGender()));
-        this.setPostcode(updateUserDto.getPostCode());
+        this.setPostcode(updateUserDto.getPostcode());
         this.setCity(updateUserDto.getCity());
         this.setPhone(updateUserDto.getPhone());
         this.setDateOfBirth(LocalDate.parse(updateUserDto.getDateOfBirth(), DATE_FORMAT));

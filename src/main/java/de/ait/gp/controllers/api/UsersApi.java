@@ -148,7 +148,7 @@ public interface UsersApi {
 
     @Operation(summary = "Updating control kindergarten's info", description = "Available to Manager")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "20o",
+            @ApiResponse(responseCode = "200",
                     description = "Success",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = KindergartenDto.class))),

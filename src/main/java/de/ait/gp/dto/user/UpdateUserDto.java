@@ -36,8 +36,8 @@ public class UpdateUserDto {
 
     @NotEmpty
     @NotBlank
-    @Schema(name = "postCode", description = "user's postcode", example = "46446")
-    private String postCode;
+    @Schema(name = "postcode", description = "user's postcode", example = "46446")
+    private String postcode;
 
     @NotEmpty
     @NotBlank

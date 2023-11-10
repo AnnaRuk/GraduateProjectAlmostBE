@@ -44,8 +44,8 @@ public class UserDto {
     @Schema(description = "user's role", example = "USER")
     private String role;
 
-    @Schema(name = "postCode", description = "user's postcode", example = "46446")
-    private String postCode;
+    @Schema(name = "postcode", description = "user's postcode", example = "46446")
+    private String postcode;
     @Schema(name = "address", description = "user's address", example = "Berlin str. 8")
     private String address;
     @Schema(name = "city", description = "user's city", example = "Berlin")
@@ -67,7 +67,7 @@ public class UserDto {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole().toString())
-                .postCode(user.getPostcode())
+                .postcode(user.getPostcode())
                 .address(user.getAddress())
                 .city(user.getCity())
                 .phone(user.getPhone())

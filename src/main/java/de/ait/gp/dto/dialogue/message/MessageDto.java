@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Schema(name = "Message", description = "Message data")
+@Schema(name = "MessageInDialogue", description = "Message data")
 public class MessageDto {
     @NotNull
     @Schema(name = "id", description = "Message's identifier", example = "1")
