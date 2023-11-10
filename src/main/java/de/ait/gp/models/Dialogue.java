@@ -6,8 +6,6 @@ import org.hibernate.proxy.HibernateProxy;
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
-
 @Getter
 @Setter
 @ToString
@@ -16,7 +14,6 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 public class Dialogue {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,9 +22,7 @@ public class Dialogue {
     private Set<User> members;
 
     @OneToMany(mappedBy = "dialogue")
-    @ToString.Exclude
     private Set<Message> messages;
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -38,7 +33,6 @@ public class Dialogue {
         Dialogue dialogue = (Dialogue) o;
         return getId() != null && Objects.equals(getId(), dialogue.getId());
     }
-
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();

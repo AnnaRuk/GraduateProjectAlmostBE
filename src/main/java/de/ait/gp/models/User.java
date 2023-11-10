@@ -1,11 +1,18 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.Role;
+import de.ait.gp.dto.user.UpdateUserDto;
+import de.ait.gp.utils.UserUtils;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
+
+import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 
 @Getter
 @Setter
@@ -16,17 +23,9 @@ import java.util.Set;
 @Table(name = "account")
 @AllArgsConstructor
 public class User {
-
-    public enum Role {
-        ADMIN, USER, MANAGER
-    }
-    public enum Gender {
-        MALE, FEMALE, DIVERSE
-    }
     public enum State {
        NOT_CONFIRMED, CONFIRMED, DELETED ,BANNED
     }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -57,10 +56,7 @@ public class User {
     private String address;
     private String postcode;
     private String city;
-
-
     private LocalDate dateOfBirth;
-
     private String phone;
 
     @OneToMany(mappedBy = "manager")
@@ -73,27 +69,16 @@ public class User {
 
     @ManyToMany
     @JoinTable(
-            name = "favorities",
+            name = "favorites",
             joinColumns = @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "kindergarten_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "kindergarten_id"} )
     )
-    private Set<Kindergarten> favorities; /////favourite
-
+    private Set<Kindergarten> favorites;
 
     @OneToMany(mappedBy = "userByCode")
     @ToString.Exclude
     private Set<ConfirmationCode> codes;
-
-
-    @OneToMany(mappedBy = "requestSender")
-    private Set<Request> requests;
-
-
-//    @OneToOne
-//    @ToString.Exclude
-//    @JoinColumn(name = "kindergarten_id", nullable = false)
-//    private Kindergarten positionKindergarten;
 
 
     @ManyToMany
@@ -103,9 +88,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "dialogue_id", nullable = false, referencedColumnName = "id"),
             uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "dialogue_id"} )
     )
+    @ToString.Exclude
     private Set<Dialogue> dialogues;
 
     @OneToMany(mappedBy = "sender")
+    @ToString.Exclude
     private Set<Message> messages;
 
 
@@ -124,4 +111,18 @@ public class User {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+    @SneakyThrows
+    public User updateFrom(UpdateUserDto updateUserDto){
+        this.setFirstName(updateUserDto.getFirstName());
+        this.setLastName(updateUserDto.getLastName());
+        this.setEmail(updateUserDto.getEmail());
+        this.setAddress(updateUserDto.getAddress());
+        this.setGender(UserUtils.getEnumGender(updateUserDto.getGender()));
+        this.setPostcode(updateUserDto.getPostcode());
+        this.setCity(updateUserDto.getCity());
+        this.setPhone(updateUserDto.getPhone());
+        this.setDateOfBirth(LocalDate.parse(updateUserDto.getDateOfBirth(), DATE_FORMAT));
+        return this;
+    }
+
 }

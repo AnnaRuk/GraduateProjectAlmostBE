@@ -1,5 +1,6 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.dialogue.message.NewMessageDto;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -28,9 +29,10 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "dialogue_id", nullable = false)
     private Dialogue dialogue;
+    @Column(name = "message_text", length = 1000)
+    private  String messageText;
 
     private LocalDateTime dateTime;
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;
@@ -41,9 +43,15 @@ public class Message {
         Message message = (Message) o;
         return getId() != null && Objects.equals(getId(), message.getId());
     }
-
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+    public static Message from(User sender, NewMessageDto newMessage) {
+        return Message.builder()
+                .sender(sender)
+                .dateTime(LocalDateTime.now())
+                .messageText(newMessage.getMessageText())
+                .build();
     }
 }

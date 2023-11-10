@@ -1,13 +1,13 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.kindergarten.NewKindergartenDto;
+import de.ait.gp.dto.kindergarten.UpdateKindergartenDto;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-
-
 @Getter
 @Setter
 @ToString
@@ -51,7 +51,7 @@ public class Kindergarten {
     private User manager;
 
     @ToString.Exclude
-    @ManyToMany(mappedBy = "favorities")
+    @ManyToMany(mappedBy = "favorites")
     private Set<User> choosers;
 
     @Override
@@ -68,5 +68,30 @@ public class Kindergarten {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public Kindergarten updateFrom(UpdateKindergartenDto updateKindergartenDto) {
+        this.setTitle(updateKindergartenDto.getTitle());
+        this.setCity(updateKindergartenDto.getCity());
+        this.setAddress(updateKindergartenDto.getAddress());
+        this.setPostcode(updateKindergartenDto.getPostcode());
+        this.setCapacity(updateKindergartenDto.getCapacity());
+        this.setDescription(updateKindergartenDto.getDescription());
+        this.setLinkImg(updateKindergartenDto.getLinkImg());
+
+        return this;
+    }
+
+    public static  Kindergarten from(NewKindergartenDto newKindergarten, User user) {
+        return Kindergarten.builder()
+                .title(newKindergarten.getTitle())
+                .city(newKindergarten.getCity())
+                .capacity(newKindergarten.getCapacity())
+                .manager(user)
+                .postcode(newKindergarten.getPostcode())
+                .address(newKindergarten.getAddress())
+                .linkImg(newKindergarten.getLinkImg())
+                .description(newKindergarten.getDescription())
+                .build();
     }
 }

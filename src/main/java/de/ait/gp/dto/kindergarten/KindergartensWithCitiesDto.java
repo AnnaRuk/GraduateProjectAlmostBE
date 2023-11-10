@@ -12,13 +12,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-@Schema(name = "KindergartensWithCities")
+@Schema(name = "KindergartensWithCities", description = "List of kindergartens with list of cities")
 public class KindergartensWithCitiesDto {
     @NotNull
-    @Schema(name = "cities", description = "all cities of kindergartens")
+    @Schema(name = "cities", description = "List of cities of kindergartens")
     private List<String> cities;
     @NotNull
-    @Schema(name = "kindergartens", description = "all kindergartens")
-    private List<KindergartenBaseDto> KindergartenBaseDTOList;
+    @Schema(name = "KindergartenList", description = "List of kindergartens")
+    private List<KindergartenDto> KindergartenDTOList;
 
 }

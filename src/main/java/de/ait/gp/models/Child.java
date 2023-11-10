@@ -1,13 +1,19 @@
 package de.ait.gp.models;
 
+import de.ait.gp.dto.Gender;
+import de.ait.gp.dto.child.NewChildDto;
+import de.ait.gp.dto.child.UpdateChildDto;
+import de.ait.gp.utils.UserUtils;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
-
+import static de.ait.gp.dto.Gender.NOT_SELECTED;
+import static de.ait.gp.utils.TimeDateFormatter.DATE_FORMAT;
 @Getter
 @Setter
 @ToString
@@ -16,11 +22,6 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 public class Child {
-
-    public enum Gender {
-        MALE, FEMALE, DIVERSE
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,11 +29,12 @@ public class Child {
     @Column(length = 20)
     private String firstName;
 
+    @Column(length = 20)
+    private String lastName;
+
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
-    @Column(length = 20)
-    private String lastName;
 
     @Column(nullable = false)
     private LocalDate dateOfBirth;
@@ -58,5 +60,22 @@ public class Child {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+    @SneakyThrows
+    public Child updateFrom(UpdateChildDto updateChildDto) {
+        this.setFirstName(updateChildDto.getFirstName());
+        this.setLastName(updateChildDto.getLastName());
+        this.setGender(UserUtils.getEnumGender(updateChildDto.getGender()));
+        this.setDateOfBirth(LocalDate.parse(updateChildDto.getDateOfBirth(), DATE_FORMAT));
+        return this;
+    }
+    public static Child from(User user, NewChildDto newChild) {
+        return Child.builder()
+                .firstName(newChild.getFirstName())
+                .lastName(newChild.getLastName())
+                .gender(newChild.getGender()!=null ? UserUtils.getEnumGender(newChild.getGender()) : NOT_SELECTED)
+                .dateOfBirth(LocalDate.parse(newChild.getDateOfBirth(), DATE_FORMAT))
+                .parent(user)
+                .build();
     }
 }
