@@ -14,6 +14,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -126,7 +127,7 @@ class UserControllersTest {
             @WithUserDetails(value = "MANAGER")
             @Test
             @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-            @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+            @Sql(scripts = {"/sql/manager.sql", "/sql/kindergarten.sql"})
             public void return_409_already_kita_with_this_data() throws Exception {
                 mockMvc.perform(post("/api/users/profile/controlKindergarten")
                                 .contentType(MediaType.APPLICATION_JSON).content("{\n" +
@@ -183,7 +184,7 @@ class UserControllersTest {
 
             @WithUserDetails(value = "MANAGER")
             @Test
-            @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+            @Sql(scripts = {"/sql/manager.sql", "/sql/kindergarten.sql"})
             @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
             public void return_200_kindergarten_of_manager() throws Exception {
                 mockMvc.perform(get("/api/users/profile/controlKindergarten"))
@@ -224,7 +225,7 @@ class UserControllersTest {
             @WithUserDetails(value = "MANAGER")
             @Test
             @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-            @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+            @Sql(scripts = {"/sql/manager.sql", "/sql/kindergarten.sql"})
             public void return_409_kindergarten_with_this_data_already_exists() throws Exception {
 
                 mockMvc.perform(put("/api/users/profile/controlKindergarten")
@@ -248,7 +249,7 @@ class UserControllersTest {
             @WithUserDetails(value = "MANAGER")
             @Test
             @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-            @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+            @Sql(scripts = {"/sql/manager.sql", "/sql/kindergarten.sql"})
             public void return_200_and_kindergartenDto() throws Exception {
 
                 mockMvc.perform(put("/api/users/profile/controlKindergarten")
@@ -273,7 +274,301 @@ class UserControllersTest {
 
         }
     }
+
+    @Nested
+    @DisplayName("GET/api/users/profile/favorites:")
+    public class GetUserFavoritesKindergartens {
+
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = "/sql/user.sql")
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_404_for_not_existed_favorites_kindergartens() throws Exception {
+            mockMvc.perform(get("/api/users/profile/favorites"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.kindergartens", is(empty())));
+
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        //подключил менеджера,потому что без него не создается kindergarten
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql", "/sql/favorites.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_200_and_list_favorites_kindergartens() throws Exception {
+            mockMvc.perform(get("/api/users/profile/favorites"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.kindergartens.size()", is(2)))
+                    .andExpect(jsonPath("$.kindergartens[0].city", is("Berlin")))
+                    .andExpect(jsonPath("$.kindergartens[0].address", is("berlinstrasse")))
+                    .andExpect(jsonPath("$.kindergartens[0].description", is("forest kindergarten")))
+                    .andExpect(jsonPath("$.kindergartens[1].city", is("Berlin")))
+                    .andExpect(jsonPath("$.kindergartens[1].address", is("strasse50")))
+                    .andExpect(jsonPath("$.kindergartens[1].description", is("very god kindergarten")));
+
+
+        }
+    }
+
+    @Nested
+    @DisplayName("POST/api/users/profile/favorites:")
+    public class AddUserFavoritesKindergartens {
+
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql", "/sql/favorites.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_409_for_kindergarten_already_added_to_favorites() throws Exception {
+            mockMvc.perform(post("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"1\"\n" +
+                                    "}"))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.message", is("This kindergarten has already been added to the user")));
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_201_and_list_favorites_kindergartens() throws Exception {
+            mockMvc.perform(post("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"1\"\n" +
+                                    "}"))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.kindergartens.size()", is(1)))
+                    .andExpect(jsonPath("$.kindergartens[0].city", is("Berlin")))
+                    .andExpect(jsonPath("$.kindergartens[0].address", is("berlinstrasse")))
+                    .andExpect(jsonPath("$.kindergartens[0].description", is("forest kindergarten")));
+        }
+
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = "/sql/user.sql")
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_404_not_found_kindergarten() throws Exception {
+            mockMvc.perform(post("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"7\"\n" +
+                                    "}"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message", is("Kindergarten with id<7> not found")));
+
+        }
+    }
+
+    @Nested
+    @DisplayName(" DELETE  /api/users/profile/favorites:")
+    public class DeleteUserFavoritesKindergartens {
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_404_not_found_kindergarten() throws Exception {
+            mockMvc.perform(post("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"7\"\n" +
+                                    "}"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message", is("Kindergarten with id<7> not found")));
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_400_not_found_in_favorite() throws Exception {
+            mockMvc.perform(delete("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"2\"\n" +
+                                    "}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message", is("This kindergarten with id<2> not found in favorite")));
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/manager.sql", "/sql/kindergarten.sql", "/sql/favorites.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_200_and_deleted_kindergarten() throws Exception {
+            mockMvc.perform(delete("/api/users/profile/favorites")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\n" +
+                                    "  \"kindergartenId\": \"1\"\n" +
+                                    "}"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.city", is("Berlin")))
+                    .andExpect(jsonPath("$.address", is("berlinstrasse")))
+                    .andExpect(jsonPath("$.description", is("forest kindergarten")));
+
+
+        }
+    }
+
+    @Nested
+    @DisplayName(" GET  /api/users/profile/children:")
+    public class GetAllChildren {
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @Sql(scripts = {"/sql/user.sql", "/sql/children.sql"})
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_200_and_list_children() throws Exception {
+            mockMvc.perform(get("/api/users/profile/children"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.children.size()", is(2)))
+                    .andExpect(jsonPath("$.children[0].id", is(1)))
+                    .andExpect(jsonPath("$.children[0].firstName", is("Oksana")))
+                    .andExpect(jsonPath("$.children[0].lastName", is("Petrova")))
+                    .andExpect(jsonPath("$.children[1].id", is(3)))
+                    .andExpect(jsonPath("$.children[1].firstName", is("Oleg")))
+                    .andExpect(jsonPath("$.children[1].lastName", is("Petrov")));
+
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        public void return_404_for_not_not_found_user() throws Exception {
+            mockMvc.perform(get("/api/users/profile/children"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message", is("User with id <1> not found")));
+        }
+
+    }
+
+    @Nested
+    @DisplayName(" POST /api/users/profile/children:")
+    public class AddNewChildToUser {
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        @Sql(scripts = {"/sql/user.sql"})
+        public void return_201_and_added_child_to_user() throws Exception {
+
+            mockMvc.perform(post("/api/users/profile/children")
+                            .contentType(MediaType.APPLICATION_JSON).content("{\n" +
+                                    "\"id\": 1,\n" +
+                                    "\"firstName\": \"Alisa\",\n" +
+                                    "\"lastName\": \"Petrova\",\n" +
+                                    "\"gender\": \"FEMALE\",\n" +
+                                    "\"dateOfBirth\": \"2017-08-01\"\n" +
+                                    "\n" +
+                                    "}"))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.children[0].id", is(1)))
+                    .andExpect(jsonPath("$.children[0].firstName", is("Alisa")))
+                    .andExpect(jsonPath("$.children[0].lastName", is("Petrova")))
+                    .andExpect(jsonPath("$.children[0].dateOfBirth", is("2017-08-01")));
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        @Sql(scripts = {"/sql/user.sql", "/sql/children.sql"})
+        public void return_409_child_already_exists() throws Exception {
+
+            mockMvc.perform(post("/api/users/profile/children")
+                            .contentType(MediaType.APPLICATION_JSON).content("{\n" +
+                                    "\"id\": 3,\n" +
+                                    "\"firstName\": \"Oksana\",\n" +
+                                    "\"lastName\": \"Petrova\",\n" +
+                                    "\"gender\": \"FEMALE\",\n" +
+                                    "\"dateOfBirth\": \"2020-01-09\"\n" +
+                                    "\n" +
+                                    "}"))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.message", is("Child with this data already exists ")));
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName(" PUT /api/users/profile/children:")
+    public class UpdateChildInUser {
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        @Sql(scripts = {"/sql/user.sql", "/sql/children.sql"})
+        public void return_404_child_not_found() throws Exception {
+
+            mockMvc.perform(put("/api/users/profile/children")
+                            .contentType(MediaType.APPLICATION_JSON).content("{\n" +
+                                    "\"id\": 5,\n" +
+                                    "\"firstName\": \"Oksana\",\n" +
+                                    "\"lastName\": \"Petrova\",\n" +
+                                    "\"gender\": \"FEMALE\",\n" +
+                                    "\"dateOfBirth\": \"2020-01-09\"\n" +
+                                    "\n" +
+                                    "}"))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.message", is("Child with id<5> of user with id <1> not found")));
+
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        @Sql(scripts = {"/sql/user.sql", "/sql/children.sql"})
+        public void return_409_child_already_exists() throws Exception {
+
+            mockMvc.perform(put("/api/users/profile/children")
+                            .contentType(MediaType.APPLICATION_JSON).content("{\n" +
+                                    "\"id\": 1,\n" +
+                                    "\"firstName\": \"Ivan\",\n" +
+                                    "\"lastName\": \"Ivanov\",\n" +
+                                    "\"gender\": \"MALE\",\n" +
+                                    "\"dateOfBirth\": \"2018-08-12\"\n" +
+                                    "\n" +
+                                    "}"))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("$.message", is("Child with this data already exists ")));
+
+
+        }
+
+        @WithUserDetails(value = "USER")
+        @Test
+        @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+        @Sql(scripts = {"/sql/user.sql","/sql/children.sql"})
+        public void return_200_and_child_in_user() throws Exception {
+
+            mockMvc.perform(put("/api/users/profile/children")
+                            .contentType(MediaType.APPLICATION_JSON).content("{\n" +
+                                    "\"id\": 1,\n" +
+                                    "\"firstName\": \"Angela\",\n" +
+                                    "\"lastName\": \"Isoldovna\",\n" +
+                                    "\"gender\": \"FEMALE\",\n" +
+                                    "\"dateOfBirth\": \"2018-09-01\"\n" +
+                                    "\n" +
+                                    "}"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.id", is(1)))
+                    .andExpect(jsonPath("$.firstName", is("Angela")))
+                    .andExpect(jsonPath("$.lastName", is("Isoldovna")))
+                    .andExpect(jsonPath("$.dateOfBirth", is("2018-09-01")));
+        }
+    }
 }
+
+
 
 
 
