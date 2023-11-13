@@ -43,7 +43,7 @@ public class KindergartenIntegrationTest {
 
 
         @Test
-        @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+        @Sql(scripts = {"/sql/user.sql","/sql/manager.sql","/sql/kindergarten.sql"})
         @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
         public void return_list_of_kindergartens_for_not_empty_database() throws Exception {
             mockMvc.perform(get("/api/kindergartens"))
@@ -61,7 +61,7 @@ public class KindergartenIntegrationTest {
 
 
             @Test
-            @Sql(scripts = {"/sql/manager.sql","/sql/kindergarten.sql"})
+            @Sql(scripts = {"/sql/user.sql","/sql/manager.sql","/sql/kindergarten.sql"})
             @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
             public void return_existed_kindergarten() throws Exception {
                 mockMvc.perform(get("/api/kindergartens/1"))

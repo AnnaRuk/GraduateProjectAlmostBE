@@ -132,11 +132,6 @@ public class UsersService {
         return KindergartenDto.from(kindergarten);
     }
 
-    public User getUserOrThrow(Long userId) {
-        return usersRepository.findById(userId)
-                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User with id <" + userId + "> not found"));
-    }
-
 
     public KindergartenDto getControlKindergarten(Long userId) {
         Kindergarten kindergarten = kindergartensRepository.findKindergartenByManager_Id(userId)
@@ -220,12 +215,6 @@ public class UsersService {
                 .build();
     }
 
-    private Kindergarten getKindergartenOrThrow(Long kindergartenId) {
-        return kindergartensRepository.findById(kindergartenId)
-                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten with id<" + kindergartenId + "> not found"));
-
-    }
-
 
     public KindergartenDto removeKindergartenFromFavorites(Long userId, Long kindergartenId) {
 
@@ -234,7 +223,7 @@ public class UsersService {
         Set<Kindergarten> kindergartens = kindergartensRepository.findAllByChoosersContainsOrderById(user);
 
         if (!kindergartens.remove(kindergarten)) {
-            throw new RestException(HttpStatus.BAD_REQUEST, "This kindergarten with id<" + kindergartenId + "> not found in favorite");
+            throw new RestException(HttpStatus.BAD_REQUEST, "This kindergarten with id <" + kindergartenId + "> not found in favorite");
         }
 
         user.setFavorites(kindergartens);
@@ -295,10 +284,6 @@ public class UsersService {
         return ChildDto.from(updateChild);
     }
 
-    public Child getChildOrThrow(Long childId) {
-        return childrenRepository.findById(childId)
-                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Child with id<" + childId + "> not found"));
-    }
 
     public RequestListWithChildrenDto getAllRequests(Long userId) {
         User user = getUserOrThrow(userId);
@@ -329,19 +314,6 @@ public class UsersService {
 
     }
 
-    public Kindergarten findKindergartenByManagerIdOrThrow(Long managerId) {
-        return kindergartensRepository.findKindergartenByManager_Id(managerId).orElseThrow(
-                () -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id<" + managerId + ">  not found")
-        );
-    }
-
-    public Request getRequestOrThrow(Long requestId) {
-        return requestsRepository.findById(requestId).orElseThrow(
-                () -> new RestException((HttpStatus.NOT_FOUND), "Request with id <" + requestId + "> not found")
-        );
-
-    }
-
     public RequestListWithChildrenDto addNewRequest(Long userId, NewRequestDto newRequest) {
         if (requestsRepository.findFirstByChild_IdAndKindergarten_IdAndStatusIsNot(
                 newRequest.getChildId(),
@@ -368,11 +340,11 @@ public class UsersService {
         }
         if (user.getRole().equals(MANAGER)) {
             if (!kindergartensRepository.findFirstByManager(user).getId().equals(request.getKindergarten().getId())) {
-                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for manager with id<" + userId + ">");
+                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for manager with id <" + userId + ">");
             }
         } else if (user.getRole().equals(USER)) {
             if (!user.getChildren().contains(request.getChild())) {
-                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for user with id<" + userId + ">");
+                throw new RestException(HttpStatus.BAD_REQUEST, "There is no available requests for user with id <" + userId + ">");
             }
         }
         request.setStatus(REJECTED);
@@ -430,7 +402,6 @@ public class UsersService {
                     .build();
             dialogue = dialoguesRepository.save(dialogue);
 
-
             recipient.getDialogues().add(dialogue);
             usersRepository.save(recipient);
 
@@ -444,5 +415,39 @@ public class UsersService {
         dialoguesRepository.save(dialogue);
         return getAllDialogues(userId);
     }
+
+
+
+
+
+    public User getUserOrThrow(Long userId) {
+        return usersRepository.findById(userId)
+                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "User with id <" + userId + "> not found"));
+    }
+
+    public Child getChildOrThrow(Long childId) {
+        return childrenRepository.findById(childId)
+                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Child with id <" + childId + "> not found"));
+    }
+
+
+    private Kindergarten getKindergartenOrThrow(Long kindergartenId) {
+        return kindergartensRepository.findById(kindergartenId)
+                .orElseThrow(() -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten with id <" + kindergartenId + "> not found"));
+
+    }
+
+    public Kindergarten findKindergartenByManagerIdOrThrow(Long managerId) {
+        return kindergartensRepository.findKindergartenByManager_Id(managerId).orElseThrow(
+                () -> new RestException(HttpStatus.NOT_FOUND, "Kindergarten of manager with id <" + managerId + ">  not found")
+        );
+    }
+    public Request getRequestOrThrow(Long requestId) {
+        return requestsRepository.findById(requestId).orElseThrow(
+                () -> new RestException((HttpStatus.NOT_FOUND), "Request with id <" + requestId + "> not found")
+        );
+
+    }
+
 }
 
