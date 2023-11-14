@@ -12,14 +12,13 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 
 @org.springframework.context.annotation.Configuration
@@ -31,15 +30,14 @@ public class AppConfig {
     }
 
     @Bean
-    public OpenAPI openAPI(@Value("${base.url}") String baseUrl) {
+    public OpenAPI openAPI() {
         ResolvedSchema resolvedSchema = ModelConverters.getInstance()
                 .resolveAsResolvedSchema(
                         new AnnotatedType(StandardResponseDto.class).resolveAsRef(false));
 
         return new OpenAPI()
-                .servers(Arrays.asList(
-                        new Server().url("http://localhost:8080"),
-                        new Server().url(baseUrl)
+                .servers(Collections.singletonList(
+                        new Server().url("http://localhost:8080")
                 ))
                 .components(new Components()
                         .addSchemas("EmailAndPassword", OpenApiDocumentation.emailAndPassword())

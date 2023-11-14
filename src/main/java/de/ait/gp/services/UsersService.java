@@ -21,7 +21,6 @@ import de.ait.gp.models.*;
 import de.ait.gp.repositories.*;
 import de.ait.gp.utils.UserUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,10 +54,6 @@ public class UsersService {
     private final MailTemplatesUtil mailTemplatesUtil;
 
 
-    @Value("${base.url}")
-    private String baseUrl;
-
-
     @Transactional
     public UserDto register(NewUserDto newUser) {
 
@@ -86,6 +81,8 @@ public class UsersService {
 
         confirmationCodeRepository.save(code);
 
+        //    @Value("${base.url}")
+        String baseUrl = "http://localhost:8080";
         String link = baseUrl + "/confirm.html?id=" + valueCode;
 
         String html = mailTemplatesUtil.createConfirmationMail(user.getFirstName(), user.getLastName(), link);
