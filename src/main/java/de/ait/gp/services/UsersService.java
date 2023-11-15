@@ -54,10 +54,8 @@ public class UsersService {
     private final ConfirmMailSender confirmMailSender;
     private final MailTemplatesUtil mailTemplatesUtil;
 
-
     @Value("${base.url}")
     private String baseUrl;
-
 
     @Transactional
     public UserDto register(NewUserDto newUser) {
