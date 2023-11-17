@@ -22,7 +22,7 @@ public class ConfirmMailSender {
         try {
             helper.setTo(mail);
             helper.setSubject(subject);
-            helper.setFrom("beliaeva.job@gmail.com");
+            helper.setFrom("kita.connection.service@gmail.com");
             helper.setText(text, true);
         } catch (MessagingException e){
             throw new IllegalStateException(e);

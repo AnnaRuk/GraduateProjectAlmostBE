@@ -25,3 +25,5 @@ logging:
         security: DEBUG
 
 
+base:
+  url: http://fake.com
