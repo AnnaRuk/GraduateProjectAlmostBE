@@ -41,7 +41,8 @@ public class SecurityConfig {
                 .antMatchers("/api/profile/dialogues").hasAnyAuthority("USER", "MANAGER")
                 .antMatchers("/api/profile/controlKindergarten").hasAuthority("MANAGER")
                 .antMatchers("/api/profile/favorites").hasAuthority("USER")
-                .antMatchers("/api/profile/children").hasAuthority("USER");
+                .antMatchers("/api/profile/children").hasAuthority("USER")
+                .antMatchers("/api/files").permitAll();
 
 
         httpSecurity.exceptionHandling()
