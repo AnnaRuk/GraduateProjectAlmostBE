@@ -1,6 +1,12 @@
 package de.ait.gp.config;
 
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import de.ait.gp.documentation.OpenApiDocumentation;
 import de.ait.gp.dto.StandardResponseDto;
 import freemarker.cache.ClassTemplateLoader;
@@ -25,6 +31,27 @@ import java.util.Collections;
 
 @org.springframework.context.annotation.Configuration
 public class AppConfig {
+
+
+    @Bean
+    public AmazonS3 amazonS3(S3ConfigurationProperties properties) {
+
+        AWSCredentials credentials = new BasicAWSCredentials(
+                properties.getAccessKey(), properties.getSecretKey()
+        );
+
+
+        AwsClientBuilder.EndpointConfiguration endpointConfiguration = new AwsClientBuilder.EndpointConfiguration(
+                properties.getEndpoint(), properties.getRegion()
+        );
+
+        AmazonS3ClientBuilder amazonS3ClientBuilder = AmazonS3ClientBuilder
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials));
+        amazonS3ClientBuilder.setEndpointConfiguration(endpointConfiguration);
+
+        return amazonS3ClientBuilder.build();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
