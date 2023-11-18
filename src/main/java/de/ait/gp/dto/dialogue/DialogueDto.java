@@ -38,7 +38,7 @@ public class DialogueDto {
                 .recipient(UserInRequestAndDialogDto.from(recipient))
                 .messages(MessageDto.from(dialogue.getMessages()
                         .stream()
-                        .sorted(Comparator.comparing(Message::getDateTime))
+                        .sorted(Comparator.comparing(Message::getDateTime).reversed())
                         .toList())
                 )
                 .build();
