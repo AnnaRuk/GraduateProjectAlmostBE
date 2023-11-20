@@ -54,7 +54,7 @@ public class UsersService {
     private final ConfirmMailSender confirmMailSender;
     private final MailTemplatesUtil mailTemplatesUtil;
 
-    @Value("${base.url}")
+    @Value("https://kitaconnection-app-9wbbe.ondigitalocean.app/kita-connection/#/confirm/")
     private String baseUrl;
 
     @Transactional
@@ -84,7 +84,7 @@ public class UsersService {
 
         confirmationCodeRepository.save(code);
 
-        String link = baseUrl + "/confirm.html?id=" + valueCode;
+        String link = baseUrl + valueCode;
 
         String html = mailTemplatesUtil.createConfirmationMail(user.getFirstName(), user.getLastName(), link);
 

@@ -35,14 +35,13 @@ public class SecurityConfig {
                 .antMatchers(HttpMethod.POST, "/api/users/register/**").permitAll()
                 .antMatchers("/api/users/confirm/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/kindergartens/**").permitAll()
-                .antMatchers("/api/users").hasAnyAuthority("ADMIN")
-                .antMatchers("/api/profile").authenticated()
-                .antMatchers("/api/profile/requests").hasAnyAuthority("USER", "MANAGER")
-                .antMatchers("/api/profile/dialogues").hasAnyAuthority("USER", "MANAGER")
-                .antMatchers("/api/profile/controlKindergarten").hasAuthority("MANAGER")
-                .antMatchers("/api/profile/favorites").hasAuthority("USER")
-                .antMatchers("/api/profile/children").hasAuthority("USER")
-                .antMatchers("/api/files").permitAll();
+                .antMatchers("/api/users/profile/controlKindergarten").hasAnyAuthority("MANAGER")
+                .antMatchers("/api/users/profile/requests").hasAnyAuthority("USER", "MANAGER")
+                .antMatchers("/api/users/profile/dialogues").hasAnyAuthority("USER", "MANAGER")
+                .antMatchers("/api/users/profile/favorites").hasAuthority("USER")
+                .antMatchers("/api/users/profile/children").hasAuthority("USER")
+                .antMatchers("/api/files").permitAll()
+                .antMatchers("/api/users/profile").hasAnyAuthority("USER", "MANAGER");
 
 
         httpSecurity.exceptionHandling()
