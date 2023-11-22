@@ -104,7 +104,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class))),
     })
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/profile/controlKindergarten")
     KindergartenDto addControlKindergartenToManager(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
@@ -121,7 +121,7 @@ public interface UsersApi {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = StandardResponseDto.class)))
     })
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @GetMapping("/profile/controlKindergarten")
     KindergartenDto getControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user);
 
@@ -162,7 +162,7 @@ public interface UsersApi {
                             schema = @Schema(implementation = StandardResponseDto.class))),
 
     })
-    @PreAuthorize("hasAuthority('MANAGER')")
+    @PreAuthorize("hasAnyAuthority('MANAGER')")
     @PutMapping("/profile/controlKindergarten")
     KindergartenDto updateControlKindergarten(@Parameter(hidden = true) @AuthenticationPrincipal AuthenticatedUser user,
                                               @RequestBody @Valid UpdateKindergartenDto updateKindergartenDto);

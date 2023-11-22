@@ -34,8 +34,6 @@ public class NewKindergartenDto {
     @NotNull
     @Schema(name = "capacity", description = "capacity of Kindergarten", example = "50")
     private Integer capacity;
-    @NotBlank
-    @NotEmpty
     @Schema(name = "linkImg", description = "Link to kindergarten's image", example = "ImageLink")
     private String linkImg;
     @NotBlank
