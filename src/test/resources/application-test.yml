@@ -9,4 +9,10 @@ spring:
 base:
     url: test
 
+s3:
+  access-key: fakeKey
+  region: fra1
+  secret-key: fakeSecretKey
+  endpoint: https://fake.com
+
 
