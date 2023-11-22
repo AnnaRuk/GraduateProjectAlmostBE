@@ -1,4 +1,4 @@
-# Kita-Connecrion
+# Kita-Connection
 This site is for parents who want to quickly and conveniently find a kindergarten for their child, and kindergarten managers who want to make it easier for themselves to admit new children to kindergarten.
 
 ## Getting Started
