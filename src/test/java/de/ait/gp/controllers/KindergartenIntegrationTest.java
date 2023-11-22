@@ -17,10 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = TestSecurityConfig.class)
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @DisplayName("Endpoint /kindergarten is works:")
 @DisplayNameGeneration(value = DisplayNameGenerator.ReplaceUnderscores.class)
-@ActiveProfiles("test")
 public class KindergartenIntegrationTest {
 
     @Autowired
@@ -40,7 +40,6 @@ public class KindergartenIntegrationTest {
                     .andExpect(jsonPath("$.cities.size()",is(0)));
 
         }
-
 
         @Test
         @Sql(scripts = {"/sql/user.sql","/sql/manager.sql","/sql/kindergarten.sql"})

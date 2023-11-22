@@ -1,6 +1,5 @@
 package de.ait.gp.controllers;
 
-
 import de.ait.gp.config.TestSecurityConfig;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
